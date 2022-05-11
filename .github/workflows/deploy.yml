@@ -27,7 +27,6 @@ jobs:
         uses: yc-actions/yc-sls-function@v2.0.0
         with:
           yc-sa-json-credentials: ${{ secrets.YC_SA_JSON_CREDENTIALS }}
-          bucket: ${{ secrets.BUCKET }}
           folder-id: 'b1g34n0j9lktsmu9ijjf'
           function-name: 'telegram-hanabigame-bot'
           runtime: 'python39'
