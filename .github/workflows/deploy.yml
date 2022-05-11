@@ -34,8 +34,14 @@ jobs:
           memory: '128Mb'
           execution-timeout: '3'
           entrypoint: 'index.handler'
+          environment: |
+            AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
+            USER_STORAGE_URL=${{ secrets.USER_STORAGE_URL }}
+            AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            BOT_TOKEN=${{ secrets.BOT_TOKEN }}
           include: |
             .
           exclude: |
-            .*
             README.md
+            .github/*
+            .git/*
