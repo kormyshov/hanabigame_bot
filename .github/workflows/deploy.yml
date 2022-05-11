@@ -32,7 +32,7 @@ jobs:
           function-name: 'telegram-hanabigame-bot'
           runtime: 'python39'
           memory: '128Mb'
-          execution-timeout: '3'
+          execution_timeout: '3'
           entrypoint: 'index.handler'
           environment: |
             AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
