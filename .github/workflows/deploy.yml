@@ -32,8 +32,10 @@ jobs:
           function-name: 'telegram-hanabigame-bot'
           runtime: 'python39'
           memory: '128Mb'
+          execution-timeout: '3'
           entrypoint: 'index.handler'
           include: |
             .
           exclude: |
-            .github
+            .*
+            README.md
