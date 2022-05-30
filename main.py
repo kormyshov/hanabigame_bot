@@ -1,11 +1,9 @@
 import os
 import telebot
-import json
 import logging
 
 import keyboards
 import constants
-import database
 from player import Player
 from game import Game
 
