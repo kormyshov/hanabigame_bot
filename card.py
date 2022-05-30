@@ -19,7 +19,7 @@ class CardColors:
     RAINBOW = '💖'
 
 
-@dataclass
+@dataclass(frozen=True)
 class Card:
     number: int
     color: str
