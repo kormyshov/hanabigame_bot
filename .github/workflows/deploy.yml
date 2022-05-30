@@ -40,7 +40,7 @@ jobs:
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
       - name: Test with pytest
         run: |
-          pytest
+          pytest ./tests/*
       - name: Deploy Function
         id: sls-func
         uses: yc-actions/yc-sls-function@v2.0.0
