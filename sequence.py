@@ -3,34 +3,12 @@ from dataclasses import dataclass, field
 from typing import List, Callable
 
 from exceptions import CardIsNotInSequence
-from card import (
-    Card,
-    CardColors as Color,
-    CardNumbers as Number,
-)
+from card import Card
 
 
 @dataclass
 class Sequence:
     lst: List[Card] = field(default_factory=list)
-
-    @classmethod
-    def init_full_sequence(cls):
-        lst = []
-        for color in Color:
-            if color == Color.RAINBOW:
-                continue
-            for count in range(3):
-                lst.append(Card(Number.ONE, color))
-            for number in (Number.TWO, Number.THREE, Number.FOUR):
-                for count in range(2):
-                    lst.append(Card(number, color))
-            lst.append(Card(Number.FIVE, color))
-
-        for number in Number:
-            lst.append(Card(number, Color.RAINBOW))
-
-        return cls(lst)
 
     def __str__(self) -> str:
         return ' '.join(map(str, self.lst))
