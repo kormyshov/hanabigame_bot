@@ -1,8 +1,11 @@
 # coding=utf-8
-from dataclasses import dataclass
+from __future__ import annotations
+from typing import NamedTuple
+from enum import Enum
+from exceptions import DontExistCard
 
 
-class CardNumbers:
+class CardNumbers(Enum):
     ONE = 1
     TWO = 2
     THREE = 3
@@ -10,7 +13,7 @@ class CardNumbers:
     FIVE = 5
 
 
-class CardColors:
+class CardColors(Enum):
     BLUE = '💙'
     GREEN = '💚'
     RED = '❤️'
@@ -19,17 +22,19 @@ class CardColors:
     RAINBOW = '💖'
 
 
-@dataclass(frozen=True)
-class Card:
-    number: int
-    color: str
+class Card(NamedTuple):
+    number: CardNumbers
+    color: CardColors
 
-    def get_previous_card(self):
+    def get_previous_card(self) -> Card:
         if self.number == CardNumbers.ONE:
-            return None
-        return Card(self.number - 1, self.color)
+            raise DontExistCard
+        return Card(CardNumbers(self.number.value - 1), self.color)
 
-    def get_next_card(self):
+    def get_next_card(self) -> Card:
         if self.number == CardNumbers.FIVE:
-            return None
-        return Card(self.number + 1, self.color)
+            raise DontExistCard
+        return Card(CardNumbers(self.number.value + 1), self.color)
+
+    def __str__(self) -> str:
+        return str(self.number.value) + self.color.value
