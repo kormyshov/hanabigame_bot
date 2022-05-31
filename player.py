@@ -4,7 +4,7 @@ import logging
 
 import database
 import game
-from sequence import Sequence, num_to_card
+from sequence import Sequence
 
 
 class PlayerState:
