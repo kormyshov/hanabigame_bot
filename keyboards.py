@@ -1,69 +1,100 @@
-from telebot import types
-import buttons
-
-start_game = types.ReplyKeyboardMarkup(resize_keyboard=True)
-start_game.add(buttons.create_game)
-start_game.add(buttons.connect_game)
-
-waiting_second_player = types.ReplyKeyboardMarkup(resize_keyboard=True)
-waiting_second_player.add(buttons.finish_game)
-
-confirm_finish_game = types.ReplyKeyboardMarkup(resize_keyboard=True)
-confirm_finish_game.add(buttons.yes_finish_game)
-confirm_finish_game.add(buttons.no_continue_game)
-
-waiting_start_game = types.ReplyKeyboardMarkup(resize_keyboard=True)
-waiting_start_game.add(buttons.start_game)
-waiting_start_game.add(buttons.finish_game)
-
-waiting_turn = types.ReplyKeyboardMarkup(resize_keyboard=True)
-waiting_turn.add(buttons.look_hands)
-waiting_turn.add(buttons.look_table)
-waiting_turn.add(buttons.look_trash)
-waiting_turn.add(buttons.finish_game)
-
-turn = types.ReplyKeyboardMarkup(resize_keyboard=True)
-turn.add(buttons.put)
-turn.add(buttons.trash)
-turn.add(buttons.hint)
-turn.add(buttons.look_hands)
-turn.add(buttons.look_table)
-turn.add(buttons.look_trash)
-turn.add(buttons.finish_game)
-
-type_of_hint = types.ReplyKeyboardMarkup(resize_keyboard=True)
-type_of_hint.add(buttons.color)
-type_of_hint.add(buttons.value)
-type_of_hint.add(buttons.back)
-
-colors = types.ReplyKeyboardMarkup(resize_keyboard=True)
-colors.add(buttons.green)
-colors.add(buttons.red)
-colors.add(buttons.blue)
-colors.add(buttons.yellow)
-colors.add(buttons.white)
-colors.add(buttons.back)
-
-values = types.ReplyKeyboardMarkup(resize_keyboard=True)
-values.add(buttons.one)
-values.add(buttons.two)
-values.add(buttons.three)
-values.add(buttons.four)
-values.add(buttons.five)
-values.add(buttons.back)
+from telebot.types import (
+    ReplyKeyboardMarkup,
+    KeyboardButton,
+)
+from typing import List
+import constants
 
 
-def get_request_card_number(count_of_cards):
-    k = types.ReplyKeyboardMarkup(resize_keyboard=True)
+def get_start_game() -> ReplyKeyboardMarkup:
+    keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
+    keyboard.add(KeyboardButton(constants.CREATE_GAME))
+    keyboard.add(KeyboardButton(constants.CONNECT_TO_GAME))
+    return keyboard
+
+
+def get_waiting_second_player() -> ReplyKeyboardMarkup:
+    keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
+    keyboard.add(KeyboardButton(constants.FINISH_GAME))
+    return keyboard
+
+
+def get_confirm_finish_game() -> ReplyKeyboardMarkup:
+    keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
+    keyboard.add(KeyboardButton(constants.YES_FINISH_GAME))
+    keyboard.add(KeyboardButton(constants.NO_CONTINUE_GAME))
+    return keyboard
+
+
+def get_waiting_start_game() -> ReplyKeyboardMarkup:
+    keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
+    keyboard.add(KeyboardButton(constants.START_GAME))
+    keyboard.add(KeyboardButton(constants.FINISH_GAME))
+    return keyboard
+
+
+def get_waiting_turn() -> ReplyKeyboardMarkup:
+    keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
+    keyboard.add(KeyboardButton(constants.LOOK_HANDS))
+    keyboard.add(KeyboardButton(constants.LOOK_TABLE))
+    keyboard.add(KeyboardButton(constants.LOOK_TRASH))
+    keyboard.add(KeyboardButton(constants.FINISH_GAME))
+    return keyboard
+
+
+def get_turn() -> ReplyKeyboardMarkup:
+    keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
+    keyboard.add(KeyboardButton(constants.PUT))
+    keyboard.add(KeyboardButton(constants.TRASH))
+    keyboard.add(KeyboardButton(constants.HINT))
+    keyboard.add(KeyboardButton(constants.LOOK_HANDS))
+    keyboard.add(KeyboardButton(constants.LOOK_TABLE))
+    keyboard.add(KeyboardButton(constants.LOOK_TRASH))
+    keyboard.add(KeyboardButton(constants.FINISH_GAME))
+    return keyboard
+
+
+def get_type_of_hint() -> ReplyKeyboardMarkup:
+    keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
+    keyboard.add(KeyboardButton(constants.COLOR))
+    keyboard.add(KeyboardButton(constants.VALUE))
+    keyboard.add(KeyboardButton(constants.BACK))
+    return keyboard
+
+
+def get_colors() -> ReplyKeyboardMarkup:
+    keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
+    keyboard.add(KeyboardButton(constants.GREEN))
+    keyboard.add(KeyboardButton(constants.RED))
+    keyboard.add(KeyboardButton(constants.BLUE))
+    keyboard.add(KeyboardButton(constants.YELLOW))
+    keyboard.add(KeyboardButton(constants.WHITE))
+    keyboard.add(KeyboardButton(constants.BACK))
+    return keyboard
+
+
+def get_values() -> ReplyKeyboardMarkup:
+    keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
+    keyboard.add(KeyboardButton(constants.ONE))
+    keyboard.add(KeyboardButton(constants.TWO))
+    keyboard.add(KeyboardButton(constants.THREE))
+    keyboard.add(KeyboardButton(constants.FOUR))
+    keyboard.add(KeyboardButton(constants.FIVE))
+    keyboard.add(KeyboardButton(constants.BACK))
+    return keyboard
+
+
+def get_request_card_number(count_of_cards: int) -> ReplyKeyboardMarkup:
+    keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
     for i in range(1, count_of_cards + 1):
-        k.add(buttons.get_card_number(i))
-    k.add(buttons.back)
-    return k
+        keyboard.add(KeyboardButton(str(i)))
+    keyboard.add(KeyboardButton(constants.BACK))
+    return keyboard
 
 
-def get_request_player_name(names):
-    k = types.ReplyKeyboardMarkup(resize_keyboard=True)
+def get_request_player_name(names: List[str]) -> ReplyKeyboardMarkup:
+    keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
     for name in names:
-        k.add(buttons.get_player_name(name))
-    k.add(buttons.back)
-    return k
+        keyboard.add(KeyboardButton(name))
+    keyboard.add(KeyboardButton(constants.BACK))
+    return keyboard
