@@ -80,7 +80,7 @@ def init_list() -> List[Card]:
 
 
 class Game(metaclass=Singleton):
-    def __init__(self, game_id: str):
+    def __init__(self, game_id: str) -> None:
         self.id: str = game_id
         self.loaded: bool = False
         self.state: GameState = GameState.NOT_START
