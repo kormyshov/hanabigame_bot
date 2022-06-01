@@ -269,60 +269,54 @@ def hint_value(player, game, value):
 
 @bot.message_handler(content_types='text')
 def message_reply(message):
-    logger = logging.getLogger('hanabigame.main.message_reply')
-    logger.info('start with message.text = ' + message.text)
-
     player = Player(message.chat.id)
-    logger.info('get player ' + str(message.chat.id))
     player.set_name(message.from_user.first_name)
-    logger.info('set name ' + message.from_user.first_name)
-    game = player.get_game()
-    logger.info('get game ' + str(game))
+    game_id = player.get_game_id()
 
-    if message.text == constants.CREATE_GAME:
-        create_new_game(player)
-    elif message.text == constants.CONNECT_TO_GAME:
-        request_id_for_connect_to_game(player)
-    elif message.text == constants.FINISH_GAME:
-        request_for_confirm_finish_game(player)
-    elif message.text == constants.YES_FINISH_GAME:
-        confirm_finish_game(game)
-    elif message.text == constants.NO_CONTINUE_GAME:
-        reject_finish_game(player)
-    elif message.text == constants.START_GAME:
-        start_game(game)
-    elif message.text == constants.LOOK_TABLE:
-        look_table(player, game)
-    elif message.text == constants.LOOK_TRASH:
-        look_trash(player, game)
-    elif message.text == constants.LOOK_HANDS:
-        look_hands(player, game)
-    elif message.text == constants.TRASH:
-        request_for_move_to_trash(player)
-    elif message.text == constants.PUT:
-        request_for_move_to_table(player)
-    elif message.text == constants.HINT:
-        request_for_hint_recipient(player, game)
-    elif message.text == constants.COLOR:
-        request_for_hint_color(player)
-    elif message.text == constants.VALUE:
-        request_for_hint_value(player)
+    if game_id is None:
+        if message.text == constants.CREATE_GAME:
+            create_new_game(player)
+        elif message.text == constants.CONNECT_TO_GAME:
+            request_id_for_connect_to_game(player)
+        else:
+            if player.is_request_game_code_to_connect():
+                connect_to_game(player, message.text)
     else:
-        logger.info('in else')
-        if player.is_request_game_code_to_connect():
-            connect_to_game(player, message.text)
-        if player.is_request_card_number_to_trash():
-            move_to_trash(player, game, message.text)
-        if player.is_request_card_number_to_put():
-            move_to_table(player, game, message.text)
-        if player.is_request_hint_recipient():
-            request_for_type_of_hint(player, game, message.text)
-        if player.is_request_hint_color():
-            hint_color(player, game, message.text)
-        if player.is_request_hint_value():
-            hint_value(player, game, message.text)
+        Game(game_id).load()
+        if message.text == constants.FINISH_GAME:
+            request_for_confirm_finish_game(player)
+        elif message.text == constants.YES_FINISH_GAME:
+            confirm_finish_game()
+        elif message.text == constants.NO_CONTINUE_GAME:
+            reject_finish_game(player)
+        elif message.text == constants.START_GAME:
+            start_game()
+        elif message.text == constants.LOOK_TABLE:
+            look_table(player)
+        elif message.text == constants.LOOK_TRASH:
+            look_trash(player)
+        elif message.text == constants.LOOK_HANDS:
+            look_hands(player)
+        elif message.text == constants.TRASH:
+            request_for_move_to_trash(player)
+        elif message.text == constants.PUT:
+            request_for_move_to_table(player)
+        elif message.text == constants.HINT:
+            request_for_hint_recipient(player)
+        elif message.text == constants.COLOR:
+            request_for_hint_color(player)
+        elif message.text == constants.VALUE:
+            request_for_hint_value(player)
+        else:
+            if player.is_request_card_number_to_trash():
+                move_to_trash(player, message.text)
+            if player.is_request_card_number_to_put():
+                move_to_table(player, message.text)
+            if player.is_request_hint_recipient():
+                request_for_type_of_hint(player, message.text)
+            if player.is_request_hint_color():
+                hint_color(player, message.text)
+            if player.is_request_hint_value():
+                hint_value(player, message.text)
 
-
-# ---------------- local testing ----------------
-if __name__ == '__main__':
-    bot.infinity_polling()
+        Game(game_id).save()
