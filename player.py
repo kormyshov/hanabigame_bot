@@ -1,5 +1,6 @@
 from typing import Optional, List
 
+import logging
 import database
 from sequence import Sequence
 from exceptions import PlayerDoesntExistInDB, UnexpectedPlayerState
@@ -39,11 +40,17 @@ class Player:
         ))
 
     def get_name(self) -> str:
+        logger = logging.getLogger('hanabigame.player.get_name')
+        logger.info('start')
         self.load()
+        logger.info('loaded')
         return self.name
 
     def set_name(self, name: str) -> None:
+        logger = logging.getLogger('hanabigame.player.set_name')
+        logger.info('start')
         if self.get_name() != name:
+            logger.info('different name')
             self.name = name
             self.save()
 
