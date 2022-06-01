@@ -1,4 +1,5 @@
 import random
+import hashlib
 from enum import Enum
 from typing import List, NamedTuple
 
@@ -116,9 +117,11 @@ class Game(metaclass=Singleton):
     def get_trash_cards(self) -> Sequence:
         return self.trash
 
-    def init_game(self, player: Player) -> None:
+    def init_game(self, player: Player) -> str:
+        self.id = hashlib.md5(str(int(player.id) + random.randint(-1000000, 1000000)).encode('utf-8')).hexdigest()
         self.state = GameState.WAITING_START
         self.connect_player(player)
+        return self.id
 
     def finish(self) -> None:
         for player in self.players:
@@ -131,7 +134,7 @@ class Game(metaclass=Singleton):
             raise GameDoesntInit
 
         self.players.append(player)
-        player.connect_to_game(self)
+        player.connect_to_game(self.id)
 
         return ConnectionResponse(
             ConnectionResult.OK if len(self.players) < 5 else ConnectionResult.OK_AND_START,
