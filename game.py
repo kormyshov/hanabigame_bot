@@ -10,7 +10,7 @@ from card import (
     CardColors,
     CardNumbers,
 )
-from exceptions import GameDoesntInit, GameStackIsEmpty, DontExistCard
+from exceptions import GameDoesntInit, GameStackIsEmpty, DontExistCard, GameDoesntExistInDB
 
 
 class GameState(Enum):
@@ -79,6 +79,17 @@ def init_list() -> List[Card]:
     return lst
 
 
+class GameORM(NamedTuple):
+    id: str
+    state: GameState
+    stack: Sequence
+    table: Sequence
+    trash: Sequence
+    hints: Hint
+    lives: Live
+    player_ids: List[str]
+
+
 class Game(metaclass=Singleton):
     def __init__(self, game_id: str) -> None:
         self.id: str = game_id
@@ -91,32 +102,33 @@ class Game(metaclass=Singleton):
         self.lives: Live = 0
         self.players: List[Player] = []
 
-    def load(self):
+    def load(self) -> None:
         if not self.loaded:
-            pass
-    #         response = database.get_game_info(self.id)
-    #         if 'Item' in response:
-    #             self.state = response['Item']['state']
-    #             self.stack = Sequence.from_str(response['Item'].get('stack', None))
-    #             self.table = Sequence.from_str(response['Item'].get('table', None))
-    #             self.trash = Sequence.from_str(response['Item'].get('trash', None))
-    #
-    #             for i in range(1, 6):
-    #                 player_id = response['Item'].get('player' + str(i), None)
-    #                 if player_id is not None:
-    #                     self.players.append(player.Player(player_id))
-    #
-    #             self.hints = response['Item'].get('hints', 0)
-    #             self.lives = response['Item'].get('lives', 0)
-    #
-    #         self.loaded = True
-    #
-    # def save(self):
-    #     player_to_id = {('player' + str(k + 1), player.id) for k, player in enumerate(self.players)}
-    #     stack = self.stack.to_str() if self.stack is not None else ''
-    #     table = self.table.to_str() if self.table is not None else ''
-    #     trash = self.trash.to_str() if self.trash is not None else ''
-    #     database.set_game_info(self.id, self.state, stack, table, trash, player_to_id, self.hints, self.lives)
+            try:
+                response: GameORM = database.get_game_info(self.id)
+                self.state = response.state
+                self.stack = response.stack
+                self.table = response.table
+                self.trash = response.trash
+                self.hints = response.hints
+                self.lives = response.lives
+                self.players = [Player(player_id) for player_id in response.player_ids]
+            except GameDoesntExistInDB:
+                pass
+
+            self.loaded = True
+
+    def save(self):
+        database.set_game_info(GameORM(
+            id=self.id,
+            state=self.state,
+            stack=self.stack,
+            table=self.table,
+            trash=self.trash,
+            hints=self.hints,
+            lives=self.lives,
+            player_ids=[player.id for player in self.players],
+        ))
 
     def get_table_info(self) -> TableInfo:
         return TableInfo(self.table, self.hints, self.lives)

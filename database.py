@@ -1,6 +1,10 @@
 import os
 import boto3
-import logging
+
+from player import PlayerORM, PlayerState
+from game import GameORM
+from exceptions import PlayerDoesntExistInDB, GameDoesntExistInDB
+from sequence import Sequence
 
 
 dynamodb = boto3.resource(
@@ -46,20 +50,39 @@ def create_database():
     )
 
 
-def get_player_info(player_id):
-    logger = logging.getLogger('hanabigame.database.get_player_info')
-    logger.info('start')
+def get_player_info(player_id: str) -> PlayerORM:
     table_players = dynamodb.Table('players')
-    logger.info('get table')
     response = table_players.get_item(Key={'id': player_id})
-    logger.info('get item')
-    return response
+
+    if 'Item' not in response:
+        raise PlayerDoesntExistInDB
+
+    return PlayerORM(
+        id=player_id,
+        name=response['Item'].get('name', None),
+        state=response['Item'].get('state', PlayerState.NOT_PLAYING),
+        game_id=response['Item'].get('game_id', None),
+        hand=response['Item'].get('hand', Sequence()),
+    )
 
 
-def get_game_info(game_id):
+def get_game_info(game_id: str) -> GameORM:
     table_games = dynamodb.Table('games')
     response = table_games.get_item(Key={'id': game_id})
-    return response
+
+    if 'Item' not in response:
+        raise GameDoesntExistInDB
+
+    return GameORM(
+        id=game_id,
+        state=response['Item']['state'],
+        stack=response['Item'].get('stack', Sequence()),
+        table=response['Item'].get('table', Sequence()),
+        trash=response['Item'].get('trash', Sequence()),
+        hints=response['Item'].get('hints', 0),
+        lives=response['Item'].get('lives', 0),
+        player_ids=response['Item'].get('player_ids', []),
+    )
 
 
 def finish_game_for_player(player_id):
@@ -92,29 +115,30 @@ def create_game(game_id, player, name):
     )
 
 
-def set_game_info(game_id, state, stack, table, trash, players, hints, lives):
+def set_game_info(game: GameORM) -> None:
     table_games = dynamodb.Table('games')
-    item = {
-        'id': game_id,
-        'state': state,
-        'stack': stack,
-        'table': table,
-        'trash': trash,
-        'hints': hints,
-        'lives': lives,
-    }
-    item.update(players)
-    table_games.put_item(Item=item)
+    table_games.put_item(
+        Item={
+            'id': game.id,
+            'state': game.state,
+            'stack': game.stack,
+            'table': game.table,
+            'trash': game.trash,
+            'hints': game.hints,
+            'lives': game.lives,
+            'player_ids': game.player_ids,
+        }
+    )
 
 
-def set_player_info(player_id, player_name, state, game_id, hand):
+def set_player_info(player: PlayerORM) -> None:
     table_players = dynamodb.Table('players')
     table_players.put_item(
         Item={
-            'id': player_id,
-            'name': player_name,
-            'state': state,
-            'game_id': str(game_id),
-            'hand': hand,
+            'id': player.id,
+            'name': player.name,
+            'state': player.state,
+            'game_id': player.game_id,
+            'hand': player.hand,
         }
     )
