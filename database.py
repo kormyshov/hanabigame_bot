@@ -53,7 +53,7 @@ def create_database():
 
 def get_player_info(player_id: str) -> PlayerORM:
     logger = logging.getLogger('hanabigame.database.get_player_info')
-    logger.info('start with player_id =', player_id)
+    logger.info('start with player_id = ' + str(player_id))
     table_players = dynamodb.Table('players')
     logger.info('get table players')
     response = table_players.get_item(Key={'id': player_id})
