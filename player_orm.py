@@ -1,0 +1,39 @@
+from enum import Enum
+from typing import Optional, NamedTuple
+
+from sequence import Sequence
+
+
+class PlayerState(Enum):
+    NOT_PLAYING = 0
+    PLAYING = 1
+    CONFIRM_FINISH_WAITING_GAME = 2
+    WAITING_START_GAME = 3
+    CONFIRM_FINISH_STARTED_GAME = 4
+    REQUEST_GAME_CODE_TO_CONNECT = 5
+    REQUEST_MOVE_TO_TRASH = 6
+    REQUEST_MOVE_TO_TABLE = 7
+    REQUEST_HINT_RECIPIENT = 8
+    REQUEST_HINT_TYPE_ONE = 9
+    REQUEST_HINT_TYPE_TWO = 10
+    REQUEST_HINT_TYPE_THREE = 11
+    REQUEST_HINT_TYPE_FOUR = 12
+    REQUEST_HINT_TYPE_FIVE = 13
+    REQUEST_HINT_ONE_COLOR = 14
+    REQUEST_HINT_TWO_COLOR = 15
+    REQUEST_HINT_THREE_COLOR = 16
+    REQUEST_HINT_FOUR_COLOR = 17
+    REQUEST_HINT_FIVE_COLOR = 18
+    REQUEST_HINT_ONE_VALUE = 19
+    REQUEST_HINT_TWO_VALUE = 20
+    REQUEST_HINT_THREE_VALUE = 21
+    REQUEST_HINT_FOUR_VALUE = 22
+    REQUEST_HINT_FIVE_VALUE = 23
+
+
+class PlayerORM(NamedTuple):
+    id: str
+    name: Optional[str]
+    state: PlayerState
+    game_id: Optional[str]
+    hand: Sequence

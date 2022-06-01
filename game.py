@@ -1,6 +1,6 @@
 import random
 from enum import Enum
-from typing import Literal, Union, List, NamedTuple
+from typing import List, NamedTuple
 
 import database
 from player import Player
@@ -10,27 +10,18 @@ from card import (
     CardColors,
     CardNumbers,
 )
-from exceptions import GameDoesntInit, GameStackIsEmpty, DontExistCard, GameDoesntExistInDB
-
-
-class GameState(Enum):
-    NOT_START = 0
-    WAITING_START = 1
-    FINISH = 2
-    TURN_PLAYER_ONE = 5
-    TURN_PLAYER_TWO = 6
-    TURN_PLAYER_THREE = 7
-    TURN_PLAYER_FOUR = 8
-    TURN_PLAYER_FIVE = 9
-    TURN_PLAYER_ONE_LAST = 10
-    TURN_PLAYER_TWO_LAST = 11
-    TURN_PLAYER_THREE_LAST = 12
-    TURN_PLAYER_FOUR_LAST = 13
-    TURN_PLAYER_FIVE_LAST = 14
-
-
-Hint = Union[Literal[0], Literal[1], Literal[2], Literal[3], Literal[4], Literal[5], Literal[6], Literal[7], Literal[8]]
-Live = Union[Literal[0], Literal[1], Literal[2], Literal[3]]
+from exceptions import (
+    GameDoesntInit,
+    GameStackIsEmpty,
+    DontExistCard,
+    GameDoesntExistInDB,
+)
+from game_orm import (
+    Hint,
+    Live,
+    GameState,
+    GameORM,
+)
 
 
 class Singleton(type):
@@ -77,17 +68,6 @@ def init_list() -> List[Card]:
         lst.append(Card(number, CardColors.RAINBOW))
 
     return lst
-
-
-class GameORM(NamedTuple):
-    id: str
-    state: GameState
-    stack: Sequence
-    table: Sequence
-    trash: Sequence
-    hints: Hint
-    lives: Live
-    player_ids: List[str]
 
 
 class Game(metaclass=Singleton):

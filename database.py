@@ -1,10 +1,10 @@
 import os
 import boto3
 
-from player import PlayerORM, PlayerState
-from game import GameORM
 from exceptions import PlayerDoesntExistInDB, GameDoesntExistInDB
 from sequence import Sequence
+from game_orm import GameORM
+from player_orm import PlayerORM, PlayerState
 
 
 dynamodb = boto3.resource(
