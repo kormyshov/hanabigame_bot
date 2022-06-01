@@ -20,6 +20,7 @@ def create_new_game(player: Player) -> None:
     logger = logging.getLogger('hanabigame.main.create_new_game')
     logger.info('start')
     game_id = Game('').init_game(player)
+    logger.info('init game with game_id = ' + game_id)
     bot.send_message(player.id, constants.GAME_CREATED)
     bot.send_message(player.id, game_id, reply_markup=keyboards.get_waiting_second_player)
 
@@ -269,7 +270,7 @@ def hint_value(player, game, value):
 @bot.message_handler(content_types='text')
 def message_reply(message):
     logger = logging.getLogger('hanabigame.main.message_reply')
-    logger.info('start')
+    logger.info('start with message.text = ' + message.text)
     player = Player(str(message.chat.id))
     logger.info('get Player')
     player.set_name(message.from_user.first_name)
@@ -278,7 +279,9 @@ def message_reply(message):
     logger.info('get game id = ' + str(game_id))
 
     if game_id is None:
+        logger.info('in if with game_id is None')
         if message.text == constants.CREATE_GAME:
+            logger.info('branch create_new_game')
             create_new_game(player)
         elif message.text == constants.CONNECT_TO_GAME:
             request_id_for_connect_to_game(player)
