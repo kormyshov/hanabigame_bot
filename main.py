@@ -269,9 +269,14 @@ def hint_value(player, game, value):
 
 @bot.message_handler(content_types='text')
 def message_reply(message):
+    logger = logging.getLogger('hanabigame.main.message_reply')
+    logger.info('start')
     player = Player(message.chat.id)
+    logger.info('get Player')
     player.set_name(message.from_user.first_name)
+    logger.info('set player name')
     game_id = player.get_game_id()
+    logger.info('get game id')
 
     if game_id is None:
         if message.text == constants.CREATE_GAME:
