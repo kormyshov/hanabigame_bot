@@ -271,7 +271,7 @@ def hint_value(player, game, value):
 def message_reply(message):
     logger = logging.getLogger('hanabigame.main.message_reply')
     logger.info('start')
-    player = Player(message.chat.id)
+    player = Player(str(message.chat.id))
     logger.info('get Player')
     player.set_name(message.from_user.first_name)
     logger.info('set player name')
