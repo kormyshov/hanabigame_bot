@@ -33,6 +33,7 @@ class Player:
                 logger.info('player doesnt exist in db')
 
             self.loaded = True
+        logger.info('loaded')
 
     def save(self) -> None:
         database.set_player_info(PlayerORM(

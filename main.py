@@ -16,7 +16,7 @@ def start_message(message):
     bot.send_message(message.chat.id, constants.ONBOARDING, reply_markup=keyboards.start_game)
 
 
-def create_new_game(player):
+def create_new_game(player: Player):
     logger = logging.getLogger('hanabigame.main.create_new_game')
     logger.info('start')
     game_id = player.create_new_game()
@@ -276,7 +276,7 @@ def message_reply(message):
     player.set_name(message.from_user.first_name)
     logger.info('set player name')
     game_id = player.get_game_id()
-    logger.info('get game id')
+    logger.info('get game id = ' + str(game_id))
 
     if game_id is None:
         if message.text == constants.CREATE_GAME:
