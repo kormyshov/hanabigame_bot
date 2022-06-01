@@ -1,5 +1,6 @@
 import os
 import boto3
+import logging
 
 from exceptions import PlayerDoesntExistInDB, GameDoesntExistInDB
 from sequence import Sequence
@@ -51,8 +52,11 @@ def create_database():
 
 
 def get_player_info(player_id: str) -> PlayerORM:
+    logger = logging.getLogger('hanabigame.database.get_player_info')
+    logger.info('start')
     table_players = dynamodb.Table('players')
     response = table_players.get_item(Key={'id': player_id})
+    logger.info('get response')
 
     if 'Item' not in response:
         raise PlayerDoesntExistInDB

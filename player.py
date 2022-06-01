@@ -18,15 +18,19 @@ class Player:
         self.name: Optional[str] = None
 
     def load(self) -> None:
+        logger = logging.getLogger('hanabigame.player.load')
+        logger.info('start')
         if not self.loaded:
+            logger.info('not loaded')
             try:
                 response: PlayerORM = database.get_player_info(self.id)
+                logger.info('get PlayerORM')
                 self.name = response.name
                 self.state = response.state
                 self.game_id = response.game_id
                 self.hand = response.hand
             except PlayerDoesntExistInDB:
-                pass
+                logger.info('player doesnt exist in db')
 
             self.loaded = True
 
