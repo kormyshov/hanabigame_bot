@@ -141,13 +141,13 @@ def set_player_info(player: PlayerORM) -> None:
     logger.info('start')
     table_players = dynamodb.Table('players')
     logger.info('get table players')
-    table_players.put_item(
-        Item={
-            'id': player.id,
-            'name': player.name,
-            'state': player.state,
-            'game_id': player.game_id,
-            'hand': player.hand,
-        }
-    )
+    item = {
+        'id': player.id,
+        'name': player.name,
+        'state': player.state,
+        'game_id': player.game_id,
+        'hand': player.hand,
+    }
+    logger.info('set item = ' + str(item))
+    table_players.put_item(item)
     logger.info('player put')
