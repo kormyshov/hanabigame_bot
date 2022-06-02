@@ -138,9 +138,14 @@ class Player:
         return self.state == PlayerState.REQUEST_GAME_CODE_TO_CONNECT
 
     def connect_to_game(self, game_id: str) -> None:
+        logger = logging.getLogger('hanabigame.player.connect_to_game')
+        logger.info('start')
         self.game_id = game_id
+        logger.info('set game_id')
         self.state = PlayerState.WAITING_START_GAME
+        logger.info('set state')
         self.save()
+        logger.info('player saved')
 
     def move_to_trash(self, card_number: int) -> Card:
         self.load()

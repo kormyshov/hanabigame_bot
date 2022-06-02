@@ -1,3 +1,4 @@
+import logging
 import random
 import hashlib
 from enum import Enum
@@ -118,9 +119,13 @@ class Game(metaclass=Singleton):
         return self.trash
 
     def init_game(self, player: Player) -> str:
+        logger = logging.getLogger('hanabigame.game.init_game')
+        logger.info('start')
         self.id = hashlib.md5(str(int(player.id) + random.randint(-1000000, 1000000)).encode('utf-8')).hexdigest()
         self.state = GameState.WAITING_START
+        logger.info('set state WAITING_START')
         self.connect_player(player)
+        logger.info('connected first player')
         return self.id
 
     def finish(self) -> None:
@@ -130,11 +135,15 @@ class Game(metaclass=Singleton):
         database.finish_game(self.id)
 
     def connect_player(self, player: Player) -> ConnectionResponse:
+        logger = logging.getLogger('hanabigame.game.connect_player')
+        logger.info('start')
         if self.state != GameState.WAITING_START:
             raise GameDoesntInit
 
         self.players.append(player)
+        logger.info('player append to list')
         player.connect_to_game(self.id)
+        logger.info('player connected')
 
         return ConnectionResponse(
             ConnectionResult.OK if len(self.players) < 5 else ConnectionResult.OK_AND_START,
