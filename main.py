@@ -278,7 +278,7 @@ def message_reply(message):
     game_id = player.get_game_id()
     logger.info('get game id = ' + str(game_id))
 
-    if game_id is None:
+    if game_id is None or game_id == 'None':
         logger.info('in if with game_id is None')
         if message.text == constants.CREATE_GAME:
             logger.info('branch create_new_game')
@@ -289,6 +289,7 @@ def message_reply(message):
             if player.is_request_game_code_to_connect():
                 connect_to_game(player, message.text)
     else:
+        logger.info('in if with game_id is not None')
         Game(game_id).load()
         if message.text == constants.FINISH_GAME:
             request_for_confirm_finish_game(player)
