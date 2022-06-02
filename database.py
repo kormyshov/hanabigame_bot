@@ -149,5 +149,5 @@ def set_player_info(player: PlayerORM) -> None:
         'hand': str(player.hand),
     }
     logger.info('set item = ' + str(item))
-    table_players.put_item(item)
+    table_players.put_item(Item=item)
     logger.info('player put')
