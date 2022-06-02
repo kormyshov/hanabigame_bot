@@ -146,7 +146,7 @@ def set_player_info(player: PlayerORM) -> None:
         'name': player.name,
         'state': int(player.state),
         'game_id': player.game_id,
-        'hand': player.hand,
+        'hand': str(player.hand),
     }
     logger.info('set item = ' + str(item))
     table_players.put_item(item)
