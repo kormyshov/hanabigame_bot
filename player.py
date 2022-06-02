@@ -36,6 +36,8 @@ class Player:
         logger.info('loaded')
 
     def save(self) -> None:
+        logger = logging.getLogger('hanabigame.player.save')
+        logger.info('start')
         database.set_player_info(PlayerORM(
             id=self.id,
             name=self.name,

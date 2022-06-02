@@ -137,7 +137,10 @@ def set_game_info(game: GameORM) -> None:
 
 
 def set_player_info(player: PlayerORM) -> None:
+    logger = logging.getLogger('hanabigame.database.set_player_info')
+    logger.info('start')
     table_players = dynamodb.Table('players')
+    logger.info('get table players')
     table_players.put_item(
         Item={
             'id': player.id,
@@ -147,3 +150,4 @@ def set_player_info(player: PlayerORM) -> None:
             'hand': player.hand,
         }
     )
+    logger.info('player put')
