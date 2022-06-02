@@ -129,10 +129,14 @@ class Game(metaclass=Singleton):
         return self.id
 
     def finish(self) -> None:
+        logger = logging.getLogger('hanabigame.game.finish')
+        logger.info('start')
         for player in self.players:
-            player.finish()
+            database.clear_player(player.id)
+        logger.info('players finished')
 
-        database.finish_game(self.id)
+        database.clear_game(self.id)
+        logger.info('game finished')
 
     def connect_player(self, player: Player) -> ConnectionResponse:
         logger = logging.getLogger('hanabigame.game.connect_player')

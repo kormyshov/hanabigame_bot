@@ -80,21 +80,30 @@ def turn_player(players, num):
     print('end turn_player')
 
 
-def request_for_confirm_finish_game(player):
+def request_for_confirm_finish_game(player: Player) -> None:
+    logger = logging.getLogger('hanabigame.main.request_for_confirm_finish_game')
+    logger.info('start')
     player.confirm_finish_game()
-    bot.send_message(player.id, constants.ARE_YOU_SURE, reply_markup=keyboards.confirm_finish_game)
+    logger.info('player confirmed')
+    bot.send_message(player.id, constants.ARE_YOU_SURE, reply_markup=keyboards.get_confirm_finish_game())
 
 
 def reject_finish_game(player):
+    logger = logging.getLogger('hanabigame.main.reject_finish_game')
+    logger.info('start')
     player.reject_finish_game()
-    bot.send_message(player.id, constants.LETS_CONTINUE,
-                     reply_markup=keyboards.waiting_second_player)  # TODO: добавить выбор клавиатуры в зависимости от state
+    logger.info('player rejected finishing')
+    # TODO: добавить выбор клавиатуры в зависимости от state
+    bot.send_message(player.id, constants.LETS_CONTINUE, reply_markup=keyboards.get_waiting_second_player())
 
 
-def confirm_finish_game(game):
-    game.finish()
-    for player in game.players:
-        bot.send_message(player.id, constants.GAME_FINISHED, reply_markup=keyboards.start_game)
+def confirm_finish_game() -> None:
+    logger = logging.getLogger('hanabigame.main.confirm_finish_game')
+    logger.info('start')
+    Game('').finish()
+    logger.info('game finished')
+    for player in Game('').players:
+        bot.send_message(player.id, constants.GAME_FINISHED, reply_markup=keyboards.get_start_game())
 
 
 def look_table(player, game):
@@ -292,10 +301,13 @@ def message_reply(message):
         logger.info('in if with game_id is not None')
         Game(game_id).load()
         if message.text == constants.FINISH_GAME:
+            logger.info('branch request_for_confirm_finish_game')
             request_for_confirm_finish_game(player)
         elif message.text == constants.YES_FINISH_GAME:
+            logger.info('branch confirm_finish_game')
             confirm_finish_game()
         elif message.text == constants.NO_CONTINUE_GAME:
+            logger.info('branch reject_finish_game')
             reject_finish_game(player)
         elif message.text == constants.START_GAME:
             start_game()

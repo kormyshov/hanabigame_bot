@@ -90,14 +90,22 @@ def get_game_info(game_id: str) -> GameORM:
     )
 
 
-def finish_game_for_player(player_id):
+def clear_player(player_id: str) -> None:
+    logger = logging.getLogger('hanabigame.database.clear_player')
+    logger.info('start with player_id = ' + player_id)
     table_players = dynamodb.Table('players')
+    logger.info('get table players')
     table_players.delete_item(Key={'id': player_id})
+    logger.info('delete row with player')
 
 
-def finish_game(game_id):
+def clear_game(game_id: str) -> None:
+    logger = logging.getLogger('hanabigame.database.clear_game')
+    logger.info('start with game_id = ' + game_id)
     table_games = dynamodb.Table('games')
+    logger.info('get table games')
     table_games.delete_item(Key={'id': game_id})
+    logger.info('delete row with game')
 
 
 def create_game(game_id, player, name):
