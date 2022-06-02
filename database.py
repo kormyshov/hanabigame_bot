@@ -144,7 +144,7 @@ def set_player_info(player: PlayerORM) -> None:
     item = {
         'id': player.id,
         'name': player.name,
-        'state': player.state,
+        'state': int(player.state),
         'game_id': player.game_id,
         'hand': player.hand,
     }

@@ -4,7 +4,7 @@ from typing import Optional, NamedTuple
 from sequence import Sequence
 
 
-class PlayerState(Enum):
+class PlayerState(Enum, int):
     NOT_PLAYING = 0
     PLAYING = 1
     CONFIRM_FINISH_WAITING_GAME = 2
