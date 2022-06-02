@@ -13,7 +13,7 @@ bot = telebot.TeleBot(os.environ.get('BOT_TOKEN'))
 @bot.message_handler(commands=['start'])
 def start_message(message):
     # database.create_database()
-    bot.send_message(message.chat.id, constants.ONBOARDING, reply_markup=keyboards.start_game)
+    bot.send_message(message.chat.id, constants.ONBOARDING, reply_markup=keyboards.get_start_game())
 
 
 def create_new_game(player: Player) -> None:
@@ -22,7 +22,7 @@ def create_new_game(player: Player) -> None:
     game_id = Game('').init_game(player)
     logger.info('init game with game_id = ' + game_id)
     bot.send_message(player.id, constants.GAME_CREATED)
-    bot.send_message(player.id, game_id, reply_markup=keyboards.get_waiting_second_player)
+    bot.send_message(player.id, game_id, reply_markup=keyboards.get_waiting_second_player())
 
 
 def request_id_for_connect_to_game(player):
