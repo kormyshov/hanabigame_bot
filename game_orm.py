@@ -1,5 +1,5 @@
 from typing import Literal, Union, List, NamedTuple
-from enum import Enum
+from enum import IntEnum
 
 from sequence import Sequence
 
@@ -8,7 +8,7 @@ Hint = Union[Literal[0], Literal[1], Literal[2], Literal[3], Literal[4], Literal
 Live = Union[Literal[0], Literal[1], Literal[2], Literal[3]]
 
 
-class GameState(Enum):
+class GameState(IntEnum):
     NOT_START = 0
     WAITING_START = 1
     FINISH = 2
