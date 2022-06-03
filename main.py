@@ -113,9 +113,9 @@ def reject_finish_game(player):
 def confirm_finish_game() -> None:
     logger = logging.getLogger('hanabigame.main.confirm_finish_game')
     logger.info('start')
-    Game('').finish()
+    Game('', db).finish()
     logger.info('game finished')
-    for player in Game('').players:
+    for player in Game('', db).players:
         bot.send_message(player.id, constants.GAME_FINISHED, reply_markup=keyboards.get_start_game())
 
 
