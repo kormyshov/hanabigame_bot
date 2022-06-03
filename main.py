@@ -354,4 +354,4 @@ def message_reply(message):
             if player.is_request_hint_value():
                 hint_value(player, message.text)
 
-        Game(game_id).save()
+        Game(game_id, db).save()
