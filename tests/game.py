@@ -1,7 +1,5 @@
-from typing import Literal
-
-import pytest
 from sequence import Sequence
+from dictbase import Dictbase
 from card import (
     Card,
     CardNumbers,
@@ -34,19 +32,19 @@ def test_init_list():
 
 
 def test_get_table_info_empty():
-    g = Game('1')
+    g = Game('1', Dictbase())
     assert g.get_table_info() == TableInfo(Sequence(), 0, 0)
 
 
 def test_get_table_info_started():
-    g = Game('1')
+    g = Game('1', Dictbase())
     g.start()
     assert g.get_table_info() == TableInfo(Sequence(), 8, 3)
     Game.clear()
 
 
 def test_get_table_info_add_to_table():
-    g = Game('1')
+    g = Game('1', Dictbase())
     g.start()
     a = Card(CardNumbers.ONE, CardColors.RAINBOW)
     g.add_to_table(a)
@@ -55,7 +53,7 @@ def test_get_table_info_add_to_table():
 
 
 def test_get_table_info_add_to_table_twice():
-    g = Game('1')
+    g = Game('1', Dictbase())
     g.start()
     a = Card(CardNumbers.ONE, CardColors.RAINBOW)
     b = Card(CardNumbers.TWO, CardColors.RAINBOW)
@@ -66,12 +64,12 @@ def test_get_table_info_add_to_table_twice():
 
 
 def test_get_trash_cards_empty():
-    g = Game('1')
+    g = Game('1', Dictbase())
     assert g.get_trash_cards() == Sequence()
 
 
 def test_get_trash_cards():
-    g = Game('1')
+    g = Game('1', Dictbase())
     a = Card(CardNumbers.ONE, CardColors.RAINBOW)
     g.add_to_trash(a)
     assert g.get_trash_cards() == Sequence([a])
@@ -79,7 +77,7 @@ def test_get_trash_cards():
 
 
 def test_get_trash_cards_many():
-    g = Game('1')
+    g = Game('1', Dictbase())
     a = Card(CardNumbers.ONE, CardColors.RAINBOW)
     b = Card(CardNumbers.TWO, CardColors.RAINBOW)
     g.add_to_trash(a)
