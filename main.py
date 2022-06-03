@@ -302,10 +302,10 @@ def message_reply(message):
 
     if game_id is None or game_id == 'None':
         logger.info('in if with game_id is None')
-        if message.text == constants.CREATE_GAME:
+        if message.text == constants.CREATE_GAME and player.is_not_playing():
             logger.info('branch create_new_game')
             create_new_game(player)
-        elif message.text == constants.CONNECT_TO_GAME:
+        elif message.text == constants.CONNECT_TO_GAME and player.is_not_playing():
             logger.info('branch request_id_for_connect_to_game')
             request_id_for_connect_to_game(player)
         else:

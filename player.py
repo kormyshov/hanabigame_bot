@@ -62,6 +62,9 @@ class Player:
             self.name = name
             self.save()
 
+    def is_not_playing(self) -> bool:
+        return self.state == PlayerState.NOT_PLAYING
+
     def get_game_id(self) -> Optional[str]:
         self.load()
         return self.game_id
