@@ -4,7 +4,7 @@ import hashlib
 from enum import Enum
 from typing import List, NamedTuple
 
-import database
+from abstract_base import AbstractBase
 from player import Player
 from sequence import Sequence
 from card import (
@@ -73,8 +73,9 @@ def init_list() -> List[Card]:
 
 
 class Game(metaclass=Singleton):
-    def __init__(self, game_id: str) -> None:
+    def __init__(self, game_id: str, database: AbstractBase) -> None:
         self.id: str = game_id
+        self.database: AbstractBase = database
         self.loaded: bool = False
         self.state: GameState = GameState.NOT_START
         self.stack: Sequence = Sequence()
@@ -87,7 +88,7 @@ class Game(metaclass=Singleton):
     def load(self) -> None:
         if not self.loaded:
             try:
-                response: GameORM = database.get_game_info(self.id)
+                response: GameORM = self.database.get_game_info(self.id)
                 self.state = response.state
                 self.stack = response.stack
                 self.table = response.table
@@ -101,7 +102,7 @@ class Game(metaclass=Singleton):
             self.loaded = True
 
     def save(self):
-        database.set_game_info(GameORM(
+        self.database.set_game_info(GameORM(
             id=self.id,
             state=self.state,
             stack=self.stack,
@@ -132,10 +133,10 @@ class Game(metaclass=Singleton):
         logger = logging.getLogger('hanabigame.game.finish')
         logger.info('start')
         for player in self.players:
-            database.clear_player(player.id)
+            self.database.clear_player(player.id)
         logger.info('players finished')
 
-        database.clear_game(self.id)
+        self.database.clear_game(self.id)
         logger.info('game finished')
 
     def connect_player(self, player: Player) -> ConnectionResponse:

@@ -4,10 +4,12 @@ import logging
 
 import keyboards
 import constants
+from database import Database
 from player import Player
 from game import Game
 
 bot = telebot.TeleBot(os.environ.get('BOT_TOKEN'))
+db = Database()
 
 
 @bot.message_handler(commands=['start'])
@@ -19,7 +21,7 @@ def start_message(message):
 def create_new_game(player: Player) -> None:
     logger = logging.getLogger('hanabigame.main.create_new_game')
     logger.info('start')
-    game_id = Game('').init_game(player)
+    game_id = Game('', db).init_game(player)
     logger.info('init game with game_id = ' + game_id)
     bot.send_message(player.id, constants.GAME_CREATED)
     bot.send_message(player.id, game_id, reply_markup=keyboards.get_waiting_second_player())
@@ -35,10 +37,10 @@ def request_id_for_connect_to_game(player):
 def connect_to_game(player, game_id):
     logger = logging.getLogger('hanabigame.main.connect_to_game')
     logger.info('start with game_id = ' + game_id)
-    game = Game(game_id)
+    game = Game(game_id, db)
     logger.info('get game')
     response, players = game.connect_player(player)
-    logger.info('get reponse ' + str(response))
+    logger.info('get response ' + str(response))
     if response == Game.ConnectResponse.ERROR:
         bot.send_message(player.id, constants.THERE_IS_NO_GAME_WITH_THIS_CODE, reply_markup=keyboards.start_game)
     else:
@@ -280,7 +282,7 @@ def hint_value(player, game, value):
 def message_reply(message):
     logger = logging.getLogger('hanabigame.main.message_reply')
     logger.info('start with message.text = ' + message.text)
-    player = Player(str(message.chat.id))
+    player = Player(str(message.chat.id), db)
     logger.info('get Player')
     player.set_name(message.from_user.first_name)
     logger.info('set player name')
@@ -299,7 +301,7 @@ def message_reply(message):
                 connect_to_game(player, message.text)
     else:
         logger.info('in if with game_id is not None')
-        Game(game_id).load()
+        Game(game_id, db).load()
         if message.text == constants.FINISH_GAME:
             logger.info('branch request_for_confirm_finish_game')
             request_for_confirm_finish_game(player)

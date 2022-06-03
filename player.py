@@ -1,7 +1,7 @@
 from typing import Optional, List
 
 import logging
-import database
+from abstract_base import AbstractBase
 from sequence import Sequence
 from exceptions import PlayerDoesntExistInDB, UnexpectedPlayerState
 from card import Card, CardColors, CardNumbers
@@ -9,8 +9,9 @@ from player_orm import PlayerState, PlayerORM
 
 
 class Player:
-    def __init__(self, chat_id: str) -> None:
+    def __init__(self, chat_id: str, database: AbstractBase) -> None:
         self.id: str = chat_id
+        self.database: AbstractBase = database
         self.loaded: bool = False
         self.state: PlayerState = PlayerState.NOT_PLAYING
         self.hand: Sequence = Sequence()
@@ -23,7 +24,7 @@ class Player:
         if not self.loaded:
             logger.info('not loaded')
             try:
-                response: PlayerORM = database.get_player_info(self.id)
+                response: PlayerORM = self.database.get_player_info(self.id)
                 logger.info('get PlayerORM')
                 self.name = response.name
                 self.state = response.state
@@ -38,7 +39,7 @@ class Player:
     def save(self) -> None:
         logger = logging.getLogger('hanabigame.player.save')
         logger.info('start')
-        database.set_player_info(PlayerORM(
+        self.database.set_player_info(PlayerORM(
             id=self.id,
             name=self.name,
             state=self.state,
