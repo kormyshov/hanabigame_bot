@@ -71,6 +71,7 @@ class Database(AbstractBase):
         logger.info('get response')
 
         if 'Item' not in response:
+            logger.info('game does not exist in db')
             raise GameDoesntExistInDB
 
         return GameORM(
