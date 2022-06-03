@@ -26,6 +26,12 @@ def get_confirm_finish_game() -> ReplyKeyboardMarkup:
     return keyboard
 
 
+def get_reject_connect_game() -> ReplyKeyboardMarkup:
+    keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
+    keyboard.add(KeyboardButton(constants.DONT_CONNECT_TO_GAME))
+    return keyboard
+
+
 def get_waiting_start_game() -> ReplyKeyboardMarkup:
     keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
     keyboard.add(KeyboardButton(constants.START_GAME))

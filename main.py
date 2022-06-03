@@ -33,7 +33,15 @@ def request_id_for_connect_to_game(player: Player) -> None:
     logger.info('start')
     player.request_game_code_to_connect()
     logger.info('player requested')
-    bot.send_message(player.id, constants.ENTER_GAME_CODE_TO_CONNECT)
+    bot.send_message(player.id, constants.ENTER_GAME_CODE_TO_CONNECT, reply_markup=keyboards.get_reject_connect_game())
+
+
+def reject_connect_to_game(player: Player) -> None:
+    logger = logging.getLogger('hanabigame.main.request_connect_to_game')
+    logger.info('start')
+    player.reject_connect_to_game()
+    logger.info('player rejected connecting')
+    bot.send_message(player.id, constants.ONBOARDING, reply_markup=keyboards.get_start_game())
 
 
 def connect_to_game(player: Player, game_id: str) -> None:
@@ -62,7 +70,11 @@ def connect_to_game(player: Player, game_id: str) -> None:
             start_game(game)
     except GameDoesntInit:
         logger.info('wrong code of game')
-        bot.send_message(player.id, constants.THERE_IS_NO_GAME_WITH_THIS_CODE)
+        bot.send_message(
+            player.id,
+            constants.THERE_IS_NO_GAME_WITH_THIS_CODE,
+            reply_markup=keyboards.get_reject_connect_game(),
+        )
 
 
 def start_game(game: Game) -> None:
@@ -308,6 +320,9 @@ def message_reply(message):
         elif message.text == constants.CONNECT_TO_GAME and player.is_not_playing():
             logger.info('branch request_id_for_connect_to_game')
             request_id_for_connect_to_game(player)
+        elif message.text == constants.DONT_CONNECT_TO_GAME and player.is_request_game_code_to_connect():
+            logger.info('branch reject_connect_to_game')
+            reject_connect_to_game(player)
         else:
             if player.is_request_game_code_to_connect():
                 logger.info('branch connect_to_game')

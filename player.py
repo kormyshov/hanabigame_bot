@@ -83,6 +83,11 @@ class Player:
             raise UnexpectedPlayerState
         self.save()
 
+    def reject_connect_to_game(self) -> None:
+        self.load()
+        self.state = PlayerState.NOT_PLAYING
+        self.save()
+
     def reject_finish_game(self) -> None:
         self.load()
         if self.state == PlayerState.CONFIRM_FINISH_STARTED_GAME:

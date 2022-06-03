@@ -4,6 +4,7 @@ ONBOARDING = 'Hello!\nPlay Hanabi and have fun!'
 
 CREATE_GAME = 'Create game'
 CONNECT_TO_GAME = 'Connect to game'
+DONT_CONNECT_TO_GAME = 'Do not connect to game'
 FINISH_GAME = 'Finish game'
 START_GAME = 'Start game'
 
