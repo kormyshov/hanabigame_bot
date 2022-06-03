@@ -49,11 +49,6 @@ class ConnectionResult(Enum):
     OK_AND_START = 2
 
 
-class ConnectionResponse(NamedTuple):
-    result: ConnectionResult
-    players: List[Player]
-
-
 def init_list() -> List[Card]:
     lst: List[Card] = []
     for color in CardColors:
@@ -139,7 +134,7 @@ class Game(metaclass=Singleton):
         self.database.clear_game(self.id)
         logger.info('game finished')
 
-    def connect_player(self, player: Player) -> ConnectionResponse:
+    def connect_player(self, player: Player) -> ConnectionResult:
         logger = logging.getLogger('hanabigame.game.connect_player')
         logger.info('start')
         if self.state != GameState.WAITING_START:
@@ -150,10 +145,7 @@ class Game(metaclass=Singleton):
         player.connect_to_game(self.id)
         logger.info('player connected')
 
-        return ConnectionResponse(
-            ConnectionResult.OK if len(self.players) < 5 else ConnectionResult.OK_AND_START,
-            self.players,
-        )
+        return ConnectionResult.OK if len(self.players) < 5 else ConnectionResult.OK_AND_START
 
     def start(self) -> None:
         lst = init_list()

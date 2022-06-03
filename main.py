@@ -5,8 +5,9 @@ import logging
 import keyboards
 import constants
 from database import Database
+from exceptions import GameDoesntInit
 from player import Player
-from game import Game
+from game import Game, ConnectionResult
 
 bot = telebot.TeleBot(os.environ.get('BOT_TOKEN'))
 db = Database()
@@ -27,59 +28,69 @@ def create_new_game(player: Player) -> None:
     bot.send_message(player.id, game_id, reply_markup=keyboards.get_waiting_second_player())
 
 
-def request_id_for_connect_to_game(player):
-    print('into def')
+def request_id_for_connect_to_game(player: Player) -> None:
+    logger = logging.getLogger('hanabigame.main.request_id_for_connect_to_game')
+    logger.info('start')
     player.request_game_code_to_connect()
-    print('before send')
+    logger.info('player requested')
     bot.send_message(player.id, constants.ENTER_GAME_CODE_TO_CONNECT)
 
 
-def connect_to_game(player, game_id):
+def connect_to_game(player: Player, game_id: str) -> None:
     logger = logging.getLogger('hanabigame.main.connect_to_game')
     logger.info('start with game_id = ' + game_id)
     game = Game(game_id, db)
     logger.info('get game')
-    response, players = game.connect_player(player)
-    logger.info('get response ' + str(response))
-    if response == Game.ConnectResponse.ERROR:
-        bot.send_message(player.id, constants.THERE_IS_NO_GAME_WITH_THIS_CODE, reply_markup=keyboards.start_game)
-    else:
-        print('into else ' + str(len(players)))
-        for p in players[:-1]:
-            bot.send_message(p.id, constants.PLAYER_CONNECT_TO_GAME.format(player.name),
-                             reply_markup=keyboards.waiting_start_game)
-        bot.send_message(player.id, constants.YOU_HAS_BEEN_CONNECTED_TO_GAME, reply_markup=keyboards.waiting_start_game)
-        if response == Game.ConnectResponse.OK_AND_START:
+    try:
+        response = game.connect_player(player)
+        logger.info('get connection result')
+        for p in game.players[:-1]:
+            bot.send_message(
+                p.id,
+                constants.PLAYER_CONNECT_TO_GAME.format(player.name),
+                reply_markup=keyboards.get_waiting_start_game(),
+            )
+        logger.info('output other players')
+        bot.send_message(
+            player.id,
+            constants.YOU_HAS_BEEN_CONNECTED_TO_GAME,
+            reply_markup=keyboards.get_waiting_start_game(),
+        )
+        logger.info('output current player')
+        if response == ConnectionResult.OK_AND_START:
+            logger.info('go to start game')
             start_game(game)
+    except GameDoesntInit:
+        logger.info('wrong code of game')
+        bot.send_message(player.id, constants.THERE_IS_NO_GAME_WITH_THIS_CODE)
 
 
-def start_game(game):
-    print('in start_game')
-    players = game.start()
-    print('started game and get players')
-    for i, p in enumerate(players):
+def start_game(game: Game) -> None:
+    logger = logging.getLogger('hanabigame.main.start_game')
+    logger.info('start')
+    game.start()
+    logger.info('game started')
+    for i, p in enumerate(game.players):
         bot.send_message(p.id, constants.GAME_STARTED)
-    print('output GAME_STARTED message')
-    turn_player(players, 0)
-    print('end start_game')
+    logger.info('output messages')
+    turn_player(game, 0)
+    logger.info('end')
 
 
-def turn_player(players, num):
-    print('in turn_player')
-    for i, p in enumerate(players):
-        print('if with ' + str(i) + ' and ' + str(num))
+def turn_player(game: Game, num: int) -> None:
+    logger = logging.getLogger('hanabigame.main.turn_player')
+    logger.info('start')
+    for i, p in enumerate(game.players):
+        logger.info('go for')
         if i == num:
-            bot.send_message(p.id, constants.YOUR_TURN, reply_markup=keyboards.turn)
+            bot.send_message(p.id, constants.YOUR_TURN, reply_markup=keyboards.get_turn())
         else:
-            print(str(p.id))
-            print('len = ' + str(len(players)))
-            print(str(players))
-            print(str(players[1]))
-            print(str(players[1].id))
-            print(players[1].get_name())
-            bot.send_message(p.id, constants.TURN_ANOTHER_PLAYER.format(players[num].get_name()),
-                             reply_markup=keyboards.waiting_turn)
-    print('end turn_player')
+            bot.send_message(
+                p.id,
+                constants.TURN_ANOTHER_PLAYER.format(game.players[num].get_name()),
+                reply_markup=keyboards.get_waiting_turn(),
+            )
+    logger.info('end')
 
 
 def request_for_confirm_finish_game(player: Player) -> None:
@@ -295,9 +306,11 @@ def message_reply(message):
             logger.info('branch create_new_game')
             create_new_game(player)
         elif message.text == constants.CONNECT_TO_GAME:
+            logger.info('branch request_id_for_connect_to_game')
             request_id_for_connect_to_game(player)
         else:
             if player.is_request_game_code_to_connect():
+                logger.info('branch connect_to_game')
                 connect_to_game(player, message.text)
     else:
         logger.info('in if with game_id is not None')
