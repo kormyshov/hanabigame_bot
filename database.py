@@ -1,9 +1,9 @@
 import os
 import boto3
 import logging
+from pickle import dumps, loads
 
 from exceptions import PlayerDoesntExistInDB, GameDoesntExistInDB
-from sequence import Sequence
 from game_orm import GameORM
 from player_orm import PlayerORM, PlayerState
 from abstract_base import AbstractBase
@@ -35,7 +35,7 @@ class Database(AbstractBase):
             name=response['Item'].get('name', None),
             state=response['Item'].get('state', PlayerState.NOT_PLAYING),
             game_id=response['Item'].get('game_id', None),
-            hand=response['Item'].get('hand', Sequence()),
+            hand=loads(response['Item'].get('hand')),
         )
 
     def set_player_info(self, player: PlayerORM) -> None:
@@ -48,7 +48,7 @@ class Database(AbstractBase):
             'name': player.name,
             'state': int(player.state),
             'game_id': player.game_id,
-            'hand': str(player.hand),
+            'hand': dumps(player.hand),
         }
         logger.info('set item = ' + str(item))
         table_players.put_item(Item=item)
@@ -77,9 +77,9 @@ class Database(AbstractBase):
         return GameORM(
             id=game_id,
             state=response['Item']['state'],
-            stack=response['Item'].get('stack', Sequence()),
-            table=response['Item'].get('table', Sequence()),
-            trash=response['Item'].get('trash', Sequence()),
+            stack=loads(response['Item'].get('stack')),
+            table=loads(response['Item'].get('table')),
+            trash=loads(response['Item'].get('trash')),
             hints=response['Item'].get('hints', 0),
             lives=response['Item'].get('lives', 0),
             player_ids=list(response['Item'].get('player_ids', '').split()),
@@ -93,9 +93,9 @@ class Database(AbstractBase):
         item = {
             'id': game.id,
             'state': int(game.state),
-            'stack': str(game.stack),
-            'table': str(game.table),
-            'trash': str(game.trash),
+            'stack': dumps(game.stack),
+            'table': dumps(game.table),
+            'trash': dumps(game.trash),
             'hints': int(game.hints),
             'lives': int(game.lives),
             'player_ids': ' '.join(game.player_ids),
