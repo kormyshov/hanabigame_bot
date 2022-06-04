@@ -82,7 +82,7 @@ class Database(AbstractBase):
             trash=response['Item'].get('trash', Sequence()),
             hints=response['Item'].get('hints', 0),
             lives=response['Item'].get('lives', 0),
-            player_ids=response['Item'].get('player_ids', []),
+            player_ids=list(response['Item'].get('player_ids', '').split()),
         )
 
     def set_game_info(self, game: GameORM) -> None:
@@ -92,13 +92,13 @@ class Database(AbstractBase):
         logger.info('get table games')
         item = {
             'id': game.id,
-            'state': game.state,
-            'stack': game.stack,
-            'table': game.table,
-            'trash': game.trash,
-            'hints': game.hints,
-            'lives': game.lives,
-            'player_ids': game.player_ids,
+            'state': int(game.state),
+            'stack': str(game.stack),
+            'table': str(game.table),
+            'trash': str(game.trash),
+            'hints': int(game.hints),
+            'lives': int(game.lives),
+            'player_ids': ' '.join(game.player_ids),
         }
         logger.info('set item = ' + str(item))
         table_games.put_item(Item=item)
