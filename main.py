@@ -22,8 +22,12 @@ def start_message(message):
 def create_new_game(player: Player) -> None:
     logger = logging.getLogger('hanabigame.main.create_new_game')
     logger.info('start')
-    game_id = Game('', db).init_game(player)
+    game = Game()
+    game_id = game.init_game(player)
     logger.info('init game with game_id = ' + game_id)
+    game.set_database(db)
+    game.save()
+    logger.info('save game')
     bot.send_message(player.id, constants.GAME_CREATED)
     bot.send_message(player.id, game_id, reply_markup=keyboards.get_waiting_second_player())
 
@@ -47,7 +51,10 @@ def reject_connect_to_game(player: Player) -> None:
 def connect_to_game(player: Player, game_id: str) -> None:
     logger = logging.getLogger('hanabigame.main.connect_to_game')
     logger.info('start with game_id = ' + game_id)
-    game = Game(game_id, db)
+    game = Game()
+    game.set_id(game_id)
+    game.set_database(db)
+    game.load()
     logger.info('get game')
     try:
         response = game.connect_player(player)
@@ -68,6 +75,8 @@ def connect_to_game(player: Player, game_id: str) -> None:
         if response == ConnectionResult.OK_AND_START:
             logger.info('go to start game')
             start_game(game)
+        game.save()
+        logger.info('game saved')
     except GameDoesntInit:
         logger.info('wrong code of game')
         bot.send_message(
@@ -329,7 +338,10 @@ def message_reply(message):
                 connect_to_game(player, message.text)
     else:
         logger.info('in if with game_id is not None')
-        Game(game_id, db).load()
+        game = Game()
+        game.set_id(game_id)
+        game.set_database(db)
+        game.load()
         if message.text == constants.FINISH_GAME:
             logger.info('branch request_for_confirm_finish_game')
             request_for_confirm_finish_game(player)
@@ -369,4 +381,4 @@ def message_reply(message):
             if player.is_request_hint_value():
                 hint_value(player, message.text)
 
-        Game(game_id, db).save()
+        game.save()

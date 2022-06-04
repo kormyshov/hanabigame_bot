@@ -2,7 +2,7 @@ import logging
 import random
 import hashlib
 from enum import Enum
-from typing import List, NamedTuple
+from typing import List, NamedTuple, Optional
 
 from abstract_base import AbstractBase
 from player import Player
@@ -17,6 +17,7 @@ from exceptions import (
     GameStackIsEmpty,
     DontExistCard,
     GameDoesntExistInDB,
+    DatabaseIsNone,
 )
 from game_orm import (
     Hint,
@@ -68,9 +69,9 @@ def init_list() -> List[Card]:
 
 
 class Game(metaclass=Singleton):
-    def __init__(self, game_id: str, database: AbstractBase) -> None:
-        self.id: str = game_id
-        self.database: AbstractBase = database
+    def __init__(self) -> None:
+        self.id: Optional[str] = None
+        self.database: Optional[AbstractBase] = None
         self.loaded: bool = False
         self.state: GameState = GameState.NOT_START
         self.stack: Sequence = Sequence()
@@ -82,6 +83,8 @@ class Game(metaclass=Singleton):
 
     def load(self) -> None:
         if not self.loaded:
+            if self.database is None:
+                raise DatabaseIsNone
             try:
                 response: GameORM = self.database.get_game_info(self.id)
                 self.state = response.state
@@ -97,6 +100,8 @@ class Game(metaclass=Singleton):
             self.loaded = True
 
     def save(self):
+        if self.database is None:
+            raise DatabaseIsNone
         self.database.set_game_info(GameORM(
             id=self.id,
             state=self.state,
@@ -107,6 +112,12 @@ class Game(metaclass=Singleton):
             lives=self.lives,
             player_ids=[player.id for player in self.players],
         ))
+
+    def set_id(self, game_id: str) -> None:
+        self.id = game_id
+
+    def set_database(self, database: AbstractBase) -> None:
+        self.database = database
 
     def get_table_info(self) -> TableInfo:
         return TableInfo(self.table, self.hints, self.lives)
@@ -127,6 +138,9 @@ class Game(metaclass=Singleton):
     def finish(self) -> None:
         logger = logging.getLogger('hanabigame.game.finish')
         logger.info('start')
+        if self.database is None:
+            logger.info('database is None')
+            raise DatabaseIsNone
         for player in self.players:
             self.database.clear_player(player.id)
         logger.info('players finished')

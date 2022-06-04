@@ -24,3 +24,7 @@ class PlayerDoesntExistInDB(Exception):
 
 class UnexpectedPlayerState(Exception):
     pass
+
+
+class DatabaseIsNone(Exception):
+    pass
