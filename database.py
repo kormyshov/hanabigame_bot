@@ -32,6 +32,9 @@ class Database(AbstractBase):
             logger.info('player doesnt exist in db')
             raise PlayerDoesntExistInDB
 
+        logger.info(response['Item'].get('hand'))
+        logger.info(loads(response['Item'].get('hand')))
+
         orm = PlayerORM(
             id=player_id,
             name=response['Item'].get('name', None),
