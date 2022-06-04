@@ -7,6 +7,7 @@ from exceptions import PlayerDoesntExistInDB, GameDoesntExistInDB
 from game_orm import GameORM
 from player_orm import PlayerORM, PlayerState
 from abstract_base import AbstractBase
+from sequence import Sequence
 
 
 class Database(AbstractBase):
@@ -36,7 +37,7 @@ class Database(AbstractBase):
             name=response['Item'].get('name', None),
             state=response['Item'].get('state', PlayerState.NOT_PLAYING),
             game_id=response['Item'].get('game_id', None),
-            hand=loads(response['Item'].get('hand')),
+            hand=Sequence(),  # loads(response['Item'].get('hand')),
         )
         logger.info('get ORM')
         logger.info('ORM = ' + str(orm))
