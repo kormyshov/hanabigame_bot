@@ -28,15 +28,19 @@ class Database(AbstractBase):
         logger.info('get response')
 
         if 'Item' not in response:
+            logger.info('player doesnt exist in db')
             raise PlayerDoesntExistInDB
 
-        return PlayerORM(
+        orm = PlayerORM(
             id=player_id,
             name=response['Item'].get('name', None),
             state=response['Item'].get('state', PlayerState.NOT_PLAYING),
             game_id=response['Item'].get('game_id', None),
             hand=loads(response['Item'].get('hand')),
         )
+        logger.info('get ORM')
+        logger.info('ORM = ' + str(orm))
+        return orm
 
     def set_player_info(self, player: PlayerORM) -> None:
         logger = logging.getLogger('hanabigame.database.set_player_info')
