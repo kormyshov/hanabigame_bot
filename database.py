@@ -86,16 +86,21 @@ class Database(AbstractBase):
             logger.info('game does not exist in db')
             raise GameDoesntExistInDB
 
-        return GameORM(
-            id=game_id,
-            state=response['Item']['state'],
-            stack=loads(bytes(response['Item'].get('stack'))),
-            table=loads(bytes(response['Item'].get('table'))),
-            trash=loads(bytes(response['Item'].get('trash'))),
-            hints=response['Item'].get('hints', 0),
-            lives=response['Item'].get('lives', 0),
-            player_ids=list(response['Item'].get('player_ids', '').split()),
-        )
+        try:
+            orm = GameORM(
+                id=game_id,
+                state=response['Item']['state'],
+                stack=loads(bytes(response['Item'].get('stack'))),
+                table=loads(bytes(response['Item'].get('table'))),
+                trash=loads(bytes(response['Item'].get('trash'))),
+                hints=response['Item'].get('hints', 0),
+                lives=response['Item'].get('lives', 0),
+                player_ids=list(response['Item'].get('player_ids', '').split()),
+            )
+        except Exception as e:
+            print('exception: ' + str(e))
+
+        return orm
 
     def set_game_info(self, game: GameORM) -> None:
         logger = logging.getLogger('hanabigame.database.set_game_info')
