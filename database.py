@@ -34,6 +34,11 @@ class Database(AbstractBase):
             logger.info('player doesnt exist in db')
             raise PlayerDoesntExistInDB
 
+        try:
+            print(loads(bytes(response['Item'].get('hand'))))
+        except Exception as e:
+            logger.info('exception: ' + str(e))
+
         orm = PlayerORM(
             id=player_id,
             name=response['Item'].get('name', None),
