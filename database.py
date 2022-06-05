@@ -97,6 +97,7 @@ class Database(AbstractBase):
                 lives=response['Item'].get('lives', 0),
                 player_ids=list(response['Item'].get('player_ids', '').split()),
             )
+            logger.info('get ORM = ' + str(orm))
         except Exception as e:
             print('exception: ' + str(e))
 
