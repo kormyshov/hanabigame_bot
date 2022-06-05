@@ -60,7 +60,7 @@ class Database(AbstractBase):
             'name': player.name,
             'state': int(player.state),
             'game_id': player.game_id,
-            'hand': b64encode(dumps(player.hand)),
+            'hand': dumps(player.hand),
         }
         logger.info('set item = ' + str(item))
         table_players.put_item(Item=item)

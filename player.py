@@ -21,6 +21,7 @@ class Player:
     def load(self) -> None:
         logger = logging.getLogger('hanabigame.player.load')
         logger.info('start')
+        return
         if not self.loaded:
             logger.info('not loaded')
             try:
