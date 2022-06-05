@@ -3,6 +3,7 @@ import boto3
 import logging
 from pickle import dumps, loads
 from base64 import b64encode, b64decode
+from binascii import b2a_base64
 
 from exceptions import PlayerDoesntExistInDB, GameDoesntExistInDB
 from game_orm import GameORM
@@ -35,7 +36,7 @@ class Database(AbstractBase):
 
         # logger.info(response['Item'].get('hand'))
         try:
-            logger.info(loads(b64decode(response['Item'].get('hand'))))
+            logger.info(loads(b64decode(b2a_base64(response['Item'].get('hand')))))
         except Exception as e:
             logger.info('exception: ' + str(e))
 
