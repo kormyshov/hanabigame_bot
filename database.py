@@ -34,18 +34,12 @@ class Database(AbstractBase):
             logger.info('player doesnt exist in db')
             raise PlayerDoesntExistInDB
 
-        # logger.info(response['Item'].get('hand'))
-        try:
-            logger.info(loads(b64decode(bytes(response['Item'].get('hand')))))
-        except Exception as e:
-            logger.info('exception: ' + str(e))
-
         orm = PlayerORM(
             id=player_id,
             name=response['Item'].get('name', None),
             state=response['Item'].get('state', PlayerState.NOT_PLAYING),
             game_id=response['Item'].get('game_id', None),
-            hand=Sequence(),  # loads(response['Item'].get('hand')),
+            hand=loads(bytes(response['Item'].get('hand'))),
         )
         logger.info('get ORM')
         logger.info('ORM = ' + str(orm))
@@ -90,9 +84,9 @@ class Database(AbstractBase):
         return GameORM(
             id=game_id,
             state=response['Item']['state'],
-            stack=loads(response['Item'].get('stack')),
-            table=loads(response['Item'].get('table')),
-            trash=loads(response['Item'].get('trash')),
+            stack=loads(bytes(response['Item'].get('stack'))),
+            table=loads(bytes(response['Item'].get('table'))),
+            trash=loads(bytes(response['Item'].get('trash'))),
             hints=response['Item'].get('hints', 0),
             lives=response['Item'].get('lives', 0),
             player_ids=list(response['Item'].get('player_ids', '').split()),
