@@ -15,7 +15,7 @@ db = Database()
 
 @bot.message_handler(commands=['start'])
 def start_message(message):
-    db.create_tables()
+    # db.create_tables()
     bot.send_message(message.chat.id, constants.ONBOARDING, reply_markup=keyboards.get_start_game())
 
 

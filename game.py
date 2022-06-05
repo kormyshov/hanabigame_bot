@@ -93,7 +93,7 @@ class Game(metaclass=Singleton):
                 self.trash = response.trash
                 self.hints = response.hints
                 self.lives = response.lives
-                self.players = [Player(player_id) for player_id in response.player_ids]
+                self.players = [Player(player_id, self.database) for player_id in response.player_ids]
             except GameDoesntExistInDB:
                 pass
 
