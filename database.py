@@ -36,7 +36,7 @@ class Database(AbstractBase):
 
         # logger.info(response['Item'].get('hand'))
         try:
-            logger.info(loads(b64decode(b2a_base64(response['Item'].get('hand')))))
+            logger.info(loads(b64decode(bytes(response['Item'].get('hand')))))
         except Exception as e:
             logger.info('exception: ' + str(e))
 
