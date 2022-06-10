@@ -361,7 +361,7 @@ def message_reply(message):
             reject_finish_game(player)
         elif message.text == constants.START_GAME:
             logger.info('branch start_game')
-            start_game(game)
+            start_game()
         elif message.text == constants.LOOK_TABLE:
             look_table(player)
         elif message.text == constants.LOOK_TRASH:
