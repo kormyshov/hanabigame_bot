@@ -122,21 +122,26 @@ def request_for_confirm_finish_game(player: Player) -> None:
     bot.send_message(player.id, constants.ARE_YOU_SURE, reply_markup=keyboards.get_confirm_finish_game())
 
 
-def reject_finish_game(player):
+def reject_finish_game(player: Player) -> None:
     logger = logging.getLogger('hanabigame.main.reject_finish_game')
     logger.info('start')
     player.reject_finish_game()
     logger.info('player rejected finishing')
-    # TODO: добавить выбор клавиатуры в зависимости от state
-    bot.send_message(player.id, constants.LETS_CONTINUE, reply_markup=keyboards.get_waiting_second_player())
+    if player.is_playing():
+        if Game().is_player_turn(player):
+            bot.send_message(player.id, constants.LETS_CONTINUE, reply_markup=keyboards.get_turn())
+        else:
+            bot.send_message(player.id, constants.LETS_CONTINUE, reply_markup=keyboards.get_waiting_turn())
+    else:
+        bot.send_message(player.id, constants.LETS_CONTINUE, reply_markup=keyboards.get_waiting_second_player())
 
 
 def confirm_finish_game() -> None:
     logger = logging.getLogger('hanabigame.main.confirm_finish_game')
     logger.info('start')
-    Game('', db).finish()
+    Game().finish()
     logger.info('game finished')
-    for player in Game('', db).players:
+    for player in Game().players:
         bot.send_message(player.id, constants.GAME_FINISHED, reply_markup=keyboards.get_start_game())
 
 
