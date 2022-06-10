@@ -74,7 +74,7 @@ def connect_to_game(player: Player, game_id: str) -> None:
         logger.info('output current player')
         if response == ConnectionResult.OK_AND_START:
             logger.info('go to start game')
-            start_game(game)
+            start_game()
         game.save()
         logger.info('game saved')
     except GameDoesntInit:
@@ -86,29 +86,29 @@ def connect_to_game(player: Player, game_id: str) -> None:
         )
 
 
-def start_game(game: Game) -> None:
+def start_game() -> None:
     logger = logging.getLogger('hanabigame.main.start_game')
     logger.info('start')
-    game.start()
+    Game().start()
     logger.info('game started')
-    for i, p in enumerate(game.players):
+    for i, p in enumerate(Game().players):
         bot.send_message(p.id, constants.GAME_STARTED)
     logger.info('output messages')
-    turn_player(game, 0)
+    turn_player(0)
     logger.info('end')
 
 
-def turn_player(game: Game, num: int) -> None:
+def turn_player(num: int) -> None:
     logger = logging.getLogger('hanabigame.main.turn_player')
     logger.info('start')
-    for i, p in enumerate(game.players):
+    for i, p in enumerate(Game().players):
         logger.info('go for')
         if i == num:
             bot.send_message(p.id, constants.YOUR_TURN, reply_markup=keyboards.get_turn())
         else:
             bot.send_message(
                 p.id,
-                constants.TURN_ANOTHER_PLAYER.format(game.players[num].get_name()),
+                constants.TURN_ANOTHER_PLAYER.format(Game().players[num].get_name()),
                 reply_markup=keyboards.get_waiting_turn(),
             )
     logger.info('end')
@@ -360,7 +360,8 @@ def message_reply(message):
             logger.info('branch reject_finish_game')
             reject_finish_game(player)
         elif message.text == constants.START_GAME:
-            start_game()
+            logger.info('branch start_game')
+            start_game(game)
         elif message.text == constants.LOOK_TABLE:
             look_table(player)
         elif message.text == constants.LOOK_TRASH:
