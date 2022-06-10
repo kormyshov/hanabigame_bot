@@ -133,7 +133,10 @@ def reject_finish_game(player: Player) -> None:
         else:
             bot.send_message(player.id, constants.LETS_CONTINUE, reply_markup=keyboards.get_waiting_turn())
     else:
-        bot.send_message(player.id, constants.LETS_CONTINUE, reply_markup=keyboards.get_waiting_second_player())
+        if len(Game().players) == 1:
+            bot.send_message(player.id, constants.LETS_CONTINUE, reply_markup=keyboards.get_waiting_second_player())
+        else:
+            bot.send_message(player.id, constants.LETS_CONTINUE, reply_markup=keyboards.get_waiting_start_game())
 
 
 def confirm_finish_game() -> None:
