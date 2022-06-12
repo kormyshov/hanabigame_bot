@@ -144,18 +144,19 @@ class Controller:
         trash = Game().get_trash_cards()
         self.viewer.view(player.id, str(trash) if trash.len() != 0 else constants.EMPTY_TRASH)
 
-    def look_hands(self, player, game):
+    def look_hands(self, player: Player) -> None:
         logger = logging.getLogger('hanabigame.main.look_hands')
         logger.info('start')
-        game.load()
-        logger.info('loaded game')
-        for p in game.players:
+        for p in Game().players:
             logger.info('get player')
             if p.id != player.id:
                 logger.info('it is another player')
-                hand_str = p.get_hand_output()
+                hand = p.get_hand_cards()
                 logger.info('got hand_str')
-                self.viewer.view(player.id, p.get_name() + '\n' + hand_str if hand_str != '' else constants.EMPTY_HAND)
+                self.viewer.view(
+                    player.id,
+                    p.get_name() + '\n' + str(hand) if hand.len() != 0 else constants.EMPTY_HAND,
+                )
 
     def request_for_move_to_trash(self, player):
         logger = logging.getLogger('hanabigame.main.request_for_move_to_trash')
