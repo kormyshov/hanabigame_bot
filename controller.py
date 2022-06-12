@@ -136,7 +136,7 @@ def confirm_finish_game(bot) -> None:
         bot.send_message(player.id, constants.GAME_FINISHED, reply_markup=keyboards.get_start_game())
 
 
-def look_table(player, game):
+def look_table(player, game, bot):
     table_str, hints, lives = game.get_table_output()
     output = table_str if table_str != '' else constants.EMPTY_TABLE
     output += '\n' + constants.HINTS + ': ' + str(hints)
@@ -144,12 +144,12 @@ def look_table(player, game):
     bot.send_message(player.id, output)
 
 
-def look_trash(player, game):
+def look_trash(player, game, bot):
     trash_str = game.get_trash_output()
     bot.send_message(player.id, trash_str if trash_str != '' else constants.EMPTY_TRASH)
 
 
-def look_hands(player, game):
+def look_hands(player, game, bot):
     logger = logging.getLogger('hanabigame.main.look_hands')
     logger.info('start')
     game.load()
@@ -163,7 +163,7 @@ def look_hands(player, game):
             bot.send_message(player.id, p.get_name() + '\n' + hand_str if hand_str != '' else constants.EMPTY_HAND)
 
 
-def request_for_move_to_trash(player):
+def request_for_move_to_trash(player, bot):
     logger = logging.getLogger('hanabigame.main.request_for_move_to_trash')
     logger.info('start')
     count_of_cards = player.request_move_to_trash()
@@ -172,7 +172,7 @@ def request_for_move_to_trash(player):
                      reply_markup=keyboards.get_request_card_number(count_of_cards))
 
 
-def move_to_trash(player, game, card_number_str):
+def move_to_trash(player, game, card_number_str, bot):
     logger = logging.getLogger('hanabigame.main.move_to_trash')
     logger.info('start')
     trashed_card = player.move_to_trash(int(card_number_str) - 1)
@@ -188,7 +188,7 @@ def move_to_trash(player, game, card_number_str):
     turn_player(game.players, int(player_number))
 
 
-def request_for_move_to_table(player):
+def request_for_move_to_table(player, bot):
     logger = logging.getLogger('hanabigame.main.request_for_move_to_table')
     logger.info('start')
     count_of_cards = player.request_move_to_table()
@@ -197,7 +197,7 @@ def request_for_move_to_table(player):
                      reply_markup=keyboards.get_request_card_number(count_of_cards))
 
 
-def move_to_table(player, game, card_number_str):
+def move_to_table(player, game, card_number_str, bot):
     logger = logging.getLogger('hanabigame.main.move_to_table')
     logger.info('start')
     put_card, success = player.move_to_table(int(card_number_str) - 1)
@@ -217,7 +217,7 @@ def move_to_table(player, game, card_number_str):
     turn_player(game.players, int(player_number))
 
 
-def request_for_hint_recipient(player, game):
+def request_for_hint_recipient(player, game, bot):
     logger = logging.getLogger('hanabigame.main.request_for_hint_recipient')
     logger.info('start')
     game.load()
@@ -228,10 +228,10 @@ def request_for_hint_recipient(player, game):
         player.request_hint_recipient()
         bot.send_message(player.id, constants.ENTER_PLAYER_NAME, reply_markup=keyboards.get_request_player_name(names))
     else:
-        request_for_type_of_hint(player, game, names[0])
+        request_for_type_of_hint(player, game, names[0], bot)
 
 
-def request_for_type_of_hint(player, game, recipient_name):
+def request_for_type_of_hint(player, game, recipient_name, bot):
     logger = logging.getLogger('hanabigame.main.request_for_type_of_hint')
     logger.info('start')
     game.load()
@@ -244,7 +244,7 @@ def request_for_type_of_hint(player, game, recipient_name):
     bot.send_message(player.id, constants.ENTER_TYPE_OF_HINT, reply_markup=keyboards.type_of_hint)
 
 
-def request_for_hint_color(player):
+def request_for_hint_color(player, bot):
     logger = logging.getLogger('hanabigame.main.request_for_hint_color')
     logger.info('start')
     player.request_hint_color()
@@ -252,7 +252,7 @@ def request_for_hint_color(player):
     bot.send_message(player.id, constants.ENTER_COLOR, reply_markup=keyboards.colors)
 
 
-def request_for_hint_value(player):
+def request_for_hint_value(player, bot):
     logger = logging.getLogger('hanabigame.main.request_for_hint_value')
     logger.info('start')
     player.request_hint_value()
@@ -260,7 +260,7 @@ def request_for_hint_value(player):
     bot.send_message(player.id, constants.ENTER_VALUE, reply_markup=keyboards.values)
 
 
-def hint_color(player, game, color):
+def hint_color(player, game, color, bot):
     logger = logging.getLogger('hanabigame.main.hint_color')
     logger.info('start')
     recipient_number = player.get_recipient_hint_number()
@@ -283,7 +283,7 @@ def hint_color(player, game, color):
     turn_player(game.players, int(player_number))
 
 
-def hint_value(player, game, value):
+def hint_value(player, game, value, bot):
     logger = logging.getLogger('hanabigame.main.hint_value')
     logger.info('start')
     recipient_number = player.get_recipient_hint_number()
