@@ -140,7 +140,7 @@ class Controller:
         output += '\n' + constants.LIVES + ': ' + str(lives)
         self.viewer.view(player.id, output)
 
-    def look_trash(self, player):
+    def look_trash(self, player: Player) -> None:
         trash = Game().get_trash_cards()
         self.viewer.view(player.id, str(trash) if trash.len() != 0 else constants.EMPTY_TRASH)
 
