@@ -18,4 +18,4 @@ def start_message(message):
 @bot.message_handler(content_types='text')
 def message_reply(message):
     db = Database()
-    controller(str(message.chat.id), message.from_user.first_name, message.text, db)
+    controller(str(message.chat.id), message.from_user.first_name, message.text, db, bot)

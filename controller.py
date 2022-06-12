@@ -6,10 +6,8 @@ from abstract_base import AbstractBase
 from player import Player
 from game import Game, ConnectionResult, GameDoesntInit
 
-from main import bot
 
-
-def create_new_game(player: Player, db: AbstractBase) -> None:
+def create_new_game(player: Player, db: AbstractBase, bot) -> None:
     logger = logging.getLogger('hanabigame.main.create_new_game')
     logger.info('start')
     game = Game()
@@ -22,7 +20,7 @@ def create_new_game(player: Player, db: AbstractBase) -> None:
     bot.send_message(player.id, game_id, reply_markup=keyboards.get_waiting_second_player())
 
 
-def request_id_for_connect_to_game(player: Player) -> None:
+def request_id_for_connect_to_game(player: Player, bot) -> None:
     logger = logging.getLogger('hanabigame.main.request_id_for_connect_to_game')
     logger.info('start')
     player.request_game_code_to_connect()
@@ -30,7 +28,7 @@ def request_id_for_connect_to_game(player: Player) -> None:
     bot.send_message(player.id, constants.ENTER_GAME_CODE_TO_CONNECT, reply_markup=keyboards.get_reject_connect_game())
 
 
-def reject_connect_to_game(player: Player) -> None:
+def reject_connect_to_game(player: Player, bot) -> None:
     logger = logging.getLogger('hanabigame.main.request_connect_to_game')
     logger.info('start')
     player.reject_connect_to_game()
@@ -38,7 +36,7 @@ def reject_connect_to_game(player: Player) -> None:
     bot.send_message(player.id, constants.ONBOARDING, reply_markup=keyboards.get_start_game())
 
 
-def connect_to_game(player: Player, game_id: str, db: AbstractBase) -> None:
+def connect_to_game(player: Player, game_id: str, db: AbstractBase, bot) -> None:
     logger = logging.getLogger('hanabigame.main.connect_to_game')
     logger.info('start with game_id = ' + game_id)
     game = Game()
@@ -64,7 +62,7 @@ def connect_to_game(player: Player, game_id: str, db: AbstractBase) -> None:
         logger.info('output current player')
         if response == ConnectionResult.OK_AND_START:
             logger.info('go to start game')
-            start_game()
+            start_game(bot)
         game.save()
         logger.info('game saved')
     except GameDoesntInit:
@@ -76,7 +74,7 @@ def connect_to_game(player: Player, game_id: str, db: AbstractBase) -> None:
         )
 
 
-def start_game() -> None:
+def start_game(bot) -> None:
     logger = logging.getLogger('hanabigame.main.start_game')
     logger.info('start')
     Game().start()
@@ -84,11 +82,11 @@ def start_game() -> None:
     for i, p in enumerate(Game().players):
         bot.send_message(p.id, constants.GAME_STARTED)
     logger.info('output messages')
-    turn_player(0)
+    turn_player(0, bot)
     logger.info('end')
 
 
-def turn_player(num: int) -> None:
+def turn_player(num: int, bot) -> None:
     logger = logging.getLogger('hanabigame.main.turn_player')
     logger.info('start')
     for i, p in enumerate(Game().players):
@@ -104,7 +102,7 @@ def turn_player(num: int) -> None:
     logger.info('end')
 
 
-def request_for_confirm_finish_game(player: Player) -> None:
+def request_for_confirm_finish_game(player: Player, bot) -> None:
     logger = logging.getLogger('hanabigame.main.request_for_confirm_finish_game')
     logger.info('start')
     player.confirm_finish_game()
@@ -112,7 +110,7 @@ def request_for_confirm_finish_game(player: Player) -> None:
     bot.send_message(player.id, constants.ARE_YOU_SURE, reply_markup=keyboards.get_confirm_finish_game())
 
 
-def reject_finish_game(player: Player) -> None:
+def reject_finish_game(player: Player, bot) -> None:
     logger = logging.getLogger('hanabigame.main.reject_finish_game')
     logger.info('start')
     player.reject_finish_game()
@@ -129,7 +127,7 @@ def reject_finish_game(player: Player) -> None:
             bot.send_message(player.id, constants.LETS_CONTINUE, reply_markup=keyboards.get_waiting_start_game())
 
 
-def confirm_finish_game() -> None:
+def confirm_finish_game(bot) -> None:
     logger = logging.getLogger('hanabigame.main.confirm_finish_game')
     logger.info('start')
     Game().finish()
@@ -308,7 +306,7 @@ def hint_value(player, game, value):
     turn_player(game.players, int(player_number))
 
 
-def controller(player_id: str, player_name: str, text: str, database: AbstractBase):
+def controller(player_id: str, player_name: str, text: str, database: AbstractBase, bot):
     logger = logging.getLogger('hanabigame.main.message_reply')
     logger.info('start with message.text = ' + text)
     player = Player(player_id, database)
@@ -322,17 +320,17 @@ def controller(player_id: str, player_name: str, text: str, database: AbstractBa
         logger.info('in if with game_id is None')
         if text == constants.CREATE_GAME and player.is_not_playing():
             logger.info('branch create_new_game')
-            create_new_game(player, database)
+            create_new_game(player, database, bot)
         elif text == constants.CONNECT_TO_GAME and player.is_not_playing():
             logger.info('branch request_id_for_connect_to_game')
-            request_id_for_connect_to_game(player)
+            request_id_for_connect_to_game(player, bot)
         elif text == constants.DONT_CONNECT_TO_GAME and player.is_request_game_code_to_connect():
             logger.info('branch reject_connect_to_game')
-            reject_connect_to_game(player)
+            reject_connect_to_game(player, bot)
         else:
             if player.is_request_game_code_to_connect():
                 logger.info('branch connect_to_game')
-                connect_to_game(player, text, database)
+                connect_to_game(player, text, database, bot)
     else:
         logger.info('in if with game_id is not None')
         game = Game()
@@ -341,17 +339,17 @@ def controller(player_id: str, player_name: str, text: str, database: AbstractBa
         game.load()
         if text == constants.FINISH_GAME:
             logger.info('branch request_for_confirm_finish_game')
-            request_for_confirm_finish_game(player)
+            request_for_confirm_finish_game(player, bot)
         elif text == constants.YES_FINISH_GAME:
             logger.info('branch confirm_finish_game')
-            confirm_finish_game()
+            confirm_finish_game(bot)
             return
         elif text == constants.NO_CONTINUE_GAME:
             logger.info('branch reject_finish_game')
-            reject_finish_game(player)
+            reject_finish_game(player, bot)
         elif text == constants.START_GAME:
             logger.info('branch start_game')
-            start_game()
+            start_game(bot)
         elif text == constants.LOOK_TABLE:
             look_table(player)
         elif text == constants.LOOK_TRASH:
