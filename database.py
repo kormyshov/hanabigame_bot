@@ -2,14 +2,10 @@ import os
 import boto3
 import logging
 from pickle import dumps, loads
-from base64 import b64encode, b64decode
-from binascii import b2a_base64
 
-from exceptions import PlayerDoesntExistInDB, GameDoesntExistInDB
 from game_orm import GameORM
 from player_orm import PlayerORM, PlayerState
-from abstract_base import AbstractBase
-from sequence import Sequence
+from abstract_base import AbstractBase, PlayerDoesntExistInDB, GameDoesntExistInDB
 
 
 class Database(AbstractBase):

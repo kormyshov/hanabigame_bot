@@ -1,7 +1,6 @@
-from exceptions import PlayerDoesntExistInDB, GameDoesntExistInDB
 from game_orm import GameORM
 from player_orm import PlayerORM
-from abstract_base import AbstractBase
+from abstract_base import AbstractBase, PlayerDoesntExistInDB, GameDoesntExistInDB
 
 
 class Dictbase(AbstractBase):

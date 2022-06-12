@@ -1,11 +1,14 @@
 from typing import Optional, List
 
 import logging
-from abstract_base import AbstractBase
+from abstract_base import AbstractBase, PlayerDoesntExistInDB
 from sequence import Sequence
-from exceptions import PlayerDoesntExistInDB, UnexpectedPlayerState
 from card import Card, CardColors, CardNumbers
 from player_orm import PlayerState, PlayerORM
+
+
+class UnexpectedPlayerState(Exception):
+    pass
 
 
 class Player:

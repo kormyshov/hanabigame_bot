@@ -2,8 +2,7 @@
 from dataclasses import dataclass, field
 from typing import List, Callable
 
-from exceptions import CardIsNotInSequence
-from card import Card, CardNumbers, CardColors
+from card import Card
 
 
 @dataclass
@@ -36,16 +35,5 @@ class Sequence:
         return [i + 1 for i, card in enumerate(self.lst) if predicate(card)]
 
 
-# from pickle import dumps, loads
-# from base64 import b64decode, b64encode
-#
-#
-# def foo():
-#     s = Sequence([Card(CardNumbers.FOUR, CardColors.YELLOW), Card(CardNumbers.ONE, CardColors.WHITE)])
-#     return b64encode(dumps(s))
-#
-#
-# d = foo()
-# print(d)
-# t = loads(b64decode(d))
-# print(t)
+class CardIsNotInSequence(Exception):
+    pass

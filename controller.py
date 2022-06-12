@@ -3,9 +3,8 @@ import logging
 import keyboards
 import constants
 from abstract_base import AbstractBase
-from exceptions import GameDoesntInit
 from player import Player
-from game import Game, ConnectionResult
+from game import Game, ConnectionResult, GameDoesntInit
 
 from main import bot
 

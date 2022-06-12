@@ -23,3 +23,11 @@ class AbstractBase:
 
     def create_tables(self) -> None:
         raise NotImplementedError
+
+
+class GameDoesntExistInDB(Exception):
+    pass
+
+
+class PlayerDoesntExistInDB(Exception):
+    pass

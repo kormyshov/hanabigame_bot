@@ -2,7 +2,6 @@
 from __future__ import annotations
 from typing import NamedTuple
 from enum import Enum
-from exceptions import DontExistCard
 
 
 class CardNumbers(Enum):
@@ -38,3 +37,7 @@ class Card(NamedTuple):
 
     def __str__(self) -> str:
         return str(self.number.value) + self.color.value
+
+
+class DontExistCard(Exception):
+    pass

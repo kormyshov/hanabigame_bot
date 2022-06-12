@@ -4,20 +4,14 @@ import hashlib
 from enum import Enum
 from typing import List, NamedTuple, Optional
 
-from abstract_base import AbstractBase
+from abstract_base import AbstractBase, GameDoesntExistInDB
 from player import Player
 from sequence import Sequence
 from card import (
     Card,
     CardColors,
     CardNumbers,
-)
-from exceptions import (
-    GameDoesntInit,
-    GameStackIsEmpty,
     DontExistCard,
-    GameDoesntExistInDB,
-    DatabaseIsNone,
 )
 from game_orm import (
     Hint,
@@ -25,6 +19,18 @@ from game_orm import (
     GameState,
     GameORM,
 )
+
+
+class DatabaseIsNone(Exception):
+    pass
+
+
+class GameStackIsEmpty(Exception):
+    pass
+
+
+class GameDoesntInit(Exception):
+    pass
 
 
 class Singleton(type):
