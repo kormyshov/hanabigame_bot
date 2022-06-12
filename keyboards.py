@@ -1,106 +1,102 @@
-from telebot.types import (
-    ReplyKeyboardMarkup,
-    KeyboardButton,
-)
-from typing import List
+from typing import List, Tuple
 import constants
 
 
-def get_start_game() -> ReplyKeyboardMarkup:
-    keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
-    keyboard.add(KeyboardButton(constants.CREATE_GAME))
-    keyboard.add(KeyboardButton(constants.CONNECT_TO_GAME))
-    return keyboard
+def get_start_game() -> Tuple[str, ...]:
+    return (
+        constants.CREATE_GAME,
+        constants.CONNECT_TO_GAME,
+    )
 
 
-def get_waiting_second_player() -> ReplyKeyboardMarkup:
-    keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
-    keyboard.add(KeyboardButton(constants.FINISH_GAME))
-    return keyboard
+def get_waiting_second_player() -> Tuple[str, ...]:
+    return (
+        constants.FINISH_GAME,
+    )
 
 
-def get_confirm_finish_game() -> ReplyKeyboardMarkup:
-    keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
-    keyboard.add(KeyboardButton(constants.YES_FINISH_GAME))
-    keyboard.add(KeyboardButton(constants.NO_CONTINUE_GAME))
-    return keyboard
+def get_confirm_finish_game() -> Tuple[str, ...]:
+    return (
+        constants.YES_FINISH_GAME,
+        constants.NO_CONTINUE_GAME,
+    )
 
 
-def get_reject_connect_game() -> ReplyKeyboardMarkup:
-    keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
-    keyboard.add(KeyboardButton(constants.DONT_CONNECT_TO_GAME))
-    return keyboard
+def get_reject_connect_game() -> Tuple[str, ...]:
+    return (
+        constants.DONT_CONNECT_TO_GAME,
+    )
 
 
-def get_waiting_start_game() -> ReplyKeyboardMarkup:
-    keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
-    keyboard.add(KeyboardButton(constants.START_GAME))
-    keyboard.add(KeyboardButton(constants.FINISH_GAME))
-    return keyboard
+def get_waiting_start_game() -> Tuple[str, ...]:
+    return (
+        constants.START_GAME,
+        constants.FINISH_GAME,
+    )
 
 
-def get_waiting_turn() -> ReplyKeyboardMarkup:
-    keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
-    keyboard.add(KeyboardButton(constants.LOOK_HANDS))
-    keyboard.add(KeyboardButton(constants.LOOK_TABLE))
-    keyboard.add(KeyboardButton(constants.LOOK_TRASH))
-    keyboard.add(KeyboardButton(constants.FINISH_GAME))
-    return keyboard
+def get_waiting_turn() -> Tuple[str, ...]:
+    return (
+        constants.LOOK_HANDS,
+        constants.LOOK_TABLE,
+        constants.LOOK_TRASH,
+        constants.FINISH_GAME,
+    )
 
 
-def get_turn() -> ReplyKeyboardMarkup:
-    keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
-    keyboard.add(KeyboardButton(constants.PUT))
-    keyboard.add(KeyboardButton(constants.TRASH))
-    keyboard.add(KeyboardButton(constants.HINT))
-    keyboard.add(KeyboardButton(constants.LOOK_HANDS))
-    keyboard.add(KeyboardButton(constants.LOOK_TABLE))
-    keyboard.add(KeyboardButton(constants.LOOK_TRASH))
-    keyboard.add(KeyboardButton(constants.FINISH_GAME))
-    return keyboard
+def get_turn() -> Tuple[str, ...]:
+    return (
+        constants.PUT,
+        constants.TRASH,
+        constants.HINT,
+        constants.LOOK_HANDS,
+        constants.LOOK_TABLE,
+        constants.LOOK_TRASH,
+        constants.FINISH_GAME,
+    )
 
 
-def get_type_of_hint() -> ReplyKeyboardMarkup:
-    keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
-    keyboard.add(KeyboardButton(constants.COLOR))
-    keyboard.add(KeyboardButton(constants.VALUE))
-    keyboard.add(KeyboardButton(constants.BACK))
-    return keyboard
+def get_type_of_hint() -> Tuple[str, ...]:
+    return (
+        constants.COLOR,
+        constants.VALUE,
+        constants.BACK,
+    )
 
 
-def get_colors() -> ReplyKeyboardMarkup:
-    keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
-    keyboard.add(KeyboardButton(constants.GREEN))
-    keyboard.add(KeyboardButton(constants.RED))
-    keyboard.add(KeyboardButton(constants.BLUE))
-    keyboard.add(KeyboardButton(constants.YELLOW))
-    keyboard.add(KeyboardButton(constants.WHITE))
-    keyboard.add(KeyboardButton(constants.BACK))
-    return keyboard
+def get_colors() -> Tuple[str, ...]:
+    return (
+        constants.GREEN,
+        constants.RED,
+        constants.BLUE,
+        constants.YELLOW,
+        constants.WHITE,
+        constants.BACK,
+    )
 
 
-def get_values() -> ReplyKeyboardMarkup:
-    keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
-    keyboard.add(KeyboardButton(constants.ONE))
-    keyboard.add(KeyboardButton(constants.TWO))
-    keyboard.add(KeyboardButton(constants.THREE))
-    keyboard.add(KeyboardButton(constants.FOUR))
-    keyboard.add(KeyboardButton(constants.FIVE))
-    keyboard.add(KeyboardButton(constants.BACK))
-    return keyboard
+def get_values() -> Tuple[str, ...]:
+    return (
+        constants.ONE,
+        constants.TWO,
+        constants.THREE,
+        constants.FOUR,
+        constants.FIVE,
+        constants.BACK,
+    )
 
 
-def get_request_card_number(count_of_cards: int) -> ReplyKeyboardMarkup:
-    keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
+def get_request_card_number(count_of_cards: int) -> List[str]:
+    keyboard = []
     for i in range(1, count_of_cards + 1):
-        keyboard.add(KeyboardButton(str(i)))
-    keyboard.add(KeyboardButton(constants.BACK))
+        keyboard.append(str(i))
+    keyboard.append(constants.BACK)
     return keyboard
 
 
-def get_request_player_name(names: List[str]) -> ReplyKeyboardMarkup:
-    keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
+def get_request_player_name(names: List[str]) -> List[str]:
+    keyboard = []
     for name in names:
-        keyboard.add(KeyboardButton(name))
-    keyboard.add(KeyboardButton(constants.BACK))
+        keyboard.append(name)
+    keyboard.append(constants.BACK)
     return keyboard
