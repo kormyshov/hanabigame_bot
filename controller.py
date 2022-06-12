@@ -140,9 +140,9 @@ class Controller:
         output += '\n' + constants.LIVES + ': ' + str(lives)
         self.viewer.view(player.id, output)
 
-    def look_trash(self, player, game):
-        trash_str = game.get_trash_output()
-        self.viewer.view(player.id, trash_str if trash_str != '' else constants.EMPTY_TRASH)
+    def look_trash(self, player):
+        trash = Game().get_trash_cards()
+        self.viewer.view(player.id, str(trash) if trash.len() != 0 else constants.EMPTY_TRASH)
 
     def look_hands(self, player, game):
         logger = logging.getLogger('hanabigame.main.look_hands')
