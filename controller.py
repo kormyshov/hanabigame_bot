@@ -133,9 +133,9 @@ class Controller:
         for player in Game().players:
             self.viewer.view(player.id, constants.GAME_FINISHED, keyboards.get_start_game())
 
-    def look_table(self, player, game):
-        table_str, hints, lives = game.get_table_output()
-        output = table_str if table_str != '' else constants.EMPTY_TABLE
+    def look_table(self, player: Player) -> None:
+        table, hints, lives = Game().get_table_info()
+        output = str(table) if table.len() != 0 else constants.EMPTY_TABLE
         output += '\n' + constants.HINTS + ': ' + str(hints)
         output += '\n' + constants.LIVES + ': ' + str(lives)
         self.viewer.view(player.id, output)
