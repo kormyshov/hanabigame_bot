@@ -1,7 +1,7 @@
 import keyboards
 import constants
 from database import Database
-from controller import controller
+from controller import Controller
 from telegram_viewer import TelegramViewer, bot
 
 
@@ -15,4 +15,4 @@ def start_message(message):
 def message_reply(message):
     db = Database()
     viewer = TelegramViewer()
-    controller(str(message.chat.id), message.from_user.first_name, message.text, db, viewer)
+    Controller(db, viewer).operate(str(message.chat.id), message.from_user.first_name, message.text)
