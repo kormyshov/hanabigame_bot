@@ -1,6 +1,5 @@
 import pytest
-from sequence import Sequence
-from exceptions import CardIsNotInSequence
+from sequence import Sequence, CardIsNotInSequence
 from card import (
     Card,
     CardNumbers,
