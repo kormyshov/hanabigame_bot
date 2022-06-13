@@ -158,52 +158,52 @@ class Controller:
                     p.get_name() + '\n' + str(hand) if hand.len() != 0 else constants.EMPTY_HAND,
                 )
 
-    def request_for_move_to_trash(self, player):
+    def request_for_move_to_trash(self, player: Player) -> None:
         logger = logging.getLogger('hanabigame.main.request_for_move_to_trash')
         logger.info('start')
         count_of_cards = player.request_move_to_trash()
         logger.info('got count_of_cards')
         self.viewer.view(player.id, constants.ENTER_CARD_NUMBER, keyboards.get_request_card_number(count_of_cards))
 
-    def move_to_trash(self, player, game, card_number_str):
+    def move_to_trash(self, player: Player, card_number: str) -> None:
         logger = logging.getLogger('hanabigame.main.move_to_trash')
         logger.info('start')
-        trashed_card = player.move_to_trash(int(card_number_str) - 1)
-        logger.info('moved to trash and got trashed crad')
-        for p in game.players:
+        trashed_card = Game().move_to_trash(player, int(card_number) - 1)
+        logger.info('moved to trash and got trashed card')
+        for p in Game().players:
             logger.info('get player')
             self.viewer.view(
                 p.id,
                 constants.PLAYER_HAS_TRASHED_CARD.format(
                     player.name if player.id != p.id else constants.YOU,
-                    trashed_card,
+                    str(trashed_card),
                 ),
             )
 
-        player_number = game.next_turn()
+        player_number = Game().next_turn()
         logger.info('next turn')
-        self.turn_player(game.players, int(player_number))
+        self.turn_player(player_number)
 
-    def request_for_move_to_table(self, player):
+    def request_for_move_to_table(self, player: Player) -> None:
         logger = logging.getLogger('hanabigame.main.request_for_move_to_table')
         logger.info('start')
         count_of_cards = player.request_move_to_table()
         logger.info('got count_of_cards')
         self.viewer.view(player.id, constants.ENTER_CARD_NUMBER, keyboards.get_request_card_number(count_of_cards))
 
-    def move_to_table(self, player, game, card_number_str):
+    def move_to_table(self, player: Player, card_number: str) -> None:
         logger = logging.getLogger('hanabigame.main.move_to_table')
         logger.info('start')
-        put_card, success = player.move_to_table(int(card_number_str) - 1)
+        success, put_card = Game().move_to_table(player, int(card_number) - 1)
         logger.info('moved to table and got put card')
-        for p in game.players:
+        for p in Game().players:
             logger.info('get player')
             if success:
                 self.viewer.view(
                     p.id,
                     constants.PLAYER_HAS_PUT_CARD.format(
                         player.name if player.id != p.id else constants.YOU,
-                        put_card,
+                        str(put_card),
                     ),
                 )
             else:
@@ -211,13 +211,13 @@ class Controller:
                     p.id,
                     constants.PLAYER_TRIED_TO_PUT_CARD.format(
                         player.name if player.id != p.id else constants.YOU,
-                        put_card,
+                        str(put_card),
                     ),
                 )
 
-        player_number = game.next_turn()
+        player_number = Game().next_turn()
         logger.info('next turn')
-        self.turn_player(game.players, int(player_number))
+        self.turn_player(player_number)
 
     def request_for_hint_recipient(self, player, game):
         logger = logging.getLogger('hanabigame.main.request_for_hint_recipient')
@@ -379,8 +379,10 @@ class Controller:
             elif text == constants.LOOK_HANDS:
                 self.look_hands(player)
             elif text == constants.TRASH:
+                logger.info('branch request_for_move_to_trash')
                 self.request_for_move_to_trash(player)
             elif text == constants.PUT:
+                logger.info('branch request_for_move_to_table')
                 self.request_for_move_to_table(player)
             elif text == constants.HINT:
                 self.request_for_hint_recipient(player)
@@ -390,8 +392,10 @@ class Controller:
                 self.request_for_hint_value(player)
             else:
                 if player.is_request_card_number_to_trash():
+                    logger.info('branch move_to_trash')
                     self.move_to_trash(player, text)
                 if player.is_request_card_number_to_put():
+                    logger.info('branch move_to_put')
                     self.move_to_table(player, text)
                 if player.is_request_hint_recipient():
                     self.request_for_type_of_hint(player, text)

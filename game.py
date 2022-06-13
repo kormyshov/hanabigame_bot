@@ -2,7 +2,7 @@ import logging
 import random
 import hashlib
 from enum import Enum
-from typing import List, NamedTuple, Optional
+from typing import List, NamedTuple, Optional, Tuple
 
 from abstract_base import AbstractBase, GameDoesntExistInDB
 from player import Player
@@ -188,26 +188,47 @@ class Game(metaclass=Singleton):
             self.state += 5
             raise GameStackIsEmpty
 
-    def add_to_trash(self, card: Card) -> None:
-        self.trash.append(card)
+    def move_card_to_player(self, player: Player) -> None:
+        try:
+            card = self.take_card()
+            player.put_card(card)
+        except GameStackIsEmpty:
+            pass
+
+    def move_to_trash(self, player: Player, card_number: int) -> Card:
+        trashed_card = player.get_card(card_number)
+        self.trash.append(trashed_card)
+        self.hints = min(self.hints + 1, 8)
+        self.move_card_to_player(player)
+        return trashed_card
+
+    def move_to_table(self, player: Player, card_number: int) -> Tuple[bool, Card]:
+        put_card = player.get_card(card_number)
+        success = True
+        if self.add_to_table(put_card):
+            try:
+                put_card.get_next_card()
+            except DontExistCard:
+                self.hints = min(self.hints + 1, 8)
+        else:
+            self.trash.append(put_card)
+            self.lives -= 1
+            success = False
+            if self.lives == 0:
+                pass  # TODO: сделать обработку конца игры
+        self.move_card_to_player(player)
+        return success, put_card
 
     def add_to_table(self, card: Card) -> bool:
         try:
             previous_card = card.get_previous_card()
             if previous_card not in self.table:
-                self.add_to_trash(card)
-                self.lives -= 1
                 return False
             index = self.table.index(previous_card)
             self.table.pop(index)
         except DontExistCard:
             pass
         self.table.append(card)
-
-        try:
-            card.get_next_card()
-        except DontExistCard:
-            self.hints = min(self.hints + 1, 8)
         return True
 
     def hint_color(self, recipient_number: int, color: CardColors) -> List[int]:

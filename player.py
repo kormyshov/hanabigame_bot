@@ -166,23 +166,34 @@ class Player:
         self.save()
         logger.info('player saved')
 
-    def move_to_trash(self, card_number: int) -> Card:
-        self.load()
-        trashed_card = self.hand.pop(card_number)
-        self.game.add_to_trash(trashed_card)
-        new_card = self.game.take_card()
-        self.hand.append(new_card)
-        self.save()
-        return trashed_card
+    # def move_to_trash(self, card_number: int) -> Card:
+    #     self.load()
+    #     trashed_card = self.hand.pop(card_number)
+    #     self.game.add_to_trash(trashed_card)
+    #     new_card = self.game.take_card()
+    #     self.hand.append(new_card)
+    #     self.save()
+    #     return trashed_card
 
-    def move_to_table(self, card_number: int) -> Card:
+    def get_card(self, card_number: int) -> Card:
         self.load()
-        put_card = self.hand.pop(card_number)
-        success = self.game.add_to_table(put_card)
-        new_card = self.game.take_card()
-        self.hand.append(new_card)
+        card = self.hand.pop(card_number)
         self.save()
-        return put_card, success
+        return card
+
+    def put_card(self, card: Card) -> None:
+        self.load()
+        self.hand.append(card)
+        self.save()
+
+    # def move_to_table(self, card_number: int) -> Card:
+    #     self.load()
+    #     put_card = self.hand.pop(card_number)
+    #     success = self.game.add_to_table(put_card)
+    #     new_card = self.game.take_card()
+    #     self.hand.append(new_card)
+    #     self.save()
+    #     return put_card, success
 
     def is_request_card_number_to_trash(self) -> bool:
         self.load()
