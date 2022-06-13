@@ -66,22 +66,3 @@ def test_get_table_info_add_to_table_twice():
 def test_get_trash_cards_empty():
     g = Game()
     assert g.get_trash_cards() == Sequence()
-
-
-def test_get_trash_cards():
-    g = Game()
-    a = Card(CardNumbers.ONE, CardColors.RAINBOW)
-    g.add_to_trash(a)
-    assert g.get_trash_cards() == Sequence([a])
-    Game.clear()
-
-
-def test_get_trash_cards_many():
-    g = Game()
-    a = Card(CardNumbers.ONE, CardColors.RAINBOW)
-    b = Card(CardNumbers.TWO, CardColors.RAINBOW)
-    g.add_to_trash(a)
-    g.add_to_trash(b)
-    g.add_to_trash(a)
-    assert g.get_trash_cards() == Sequence([a, b, a])
-    Game.clear()
