@@ -21,6 +21,15 @@ class Player:
         self.game_id: Optional[str] = None
         self.name: Optional[str] = None
 
+    def __str__(self) -> str:
+        return 'Player(id: {}, name: {}, state: {}, game_id: {}, hand: {})'.format(
+            self.id,
+            self.name,
+            str(self.state.name),
+            self.game_id,
+            str(self.hand),
+        )
+
     def load(self) -> None:
         logger = logging.getLogger('hanabigame.player.load')
         logger.info('start')

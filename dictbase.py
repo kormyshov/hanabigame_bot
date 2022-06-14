@@ -8,6 +8,9 @@ class Dictbase(AbstractBase):
         self.games = dict()
         self.players = dict()
 
+    def __str__(self) -> str:
+        return 'games: {}, players: {}'.format(str(self.games), str(self.players))
+
     def get_player_info(self, player_id: str) -> PlayerORM:
         if player_id not in self.players:
             raise PlayerDoesntExistInDB

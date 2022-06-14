@@ -87,6 +87,17 @@ class Game(metaclass=Singleton):
         self.lives: Live = 0
         self.players: List[Player] = []
 
+    def __str__(self) -> str:
+        return 'Game(id: {}, state: {}, hints: {}, lives: {}, table: {}, trash: {}, stack: {})'.format(
+            self.id,
+            str(self.state.name),
+            str(self.hints),
+            str(self.lives),
+            str(self.table),
+            str(self.trash),
+            str(self.stack),
+        )
+
     def load(self) -> None:
         if not self.loaded:
             if self.database is None:
