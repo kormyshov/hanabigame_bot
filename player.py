@@ -259,3 +259,8 @@ class Player:
         self.state = PlayerState.PLAYING
         self.hand = hand
         self.save()
+
+    def end_turn(self) -> None:
+        self.load()
+        self.state = PlayerState.PLAYING
+        self.save()

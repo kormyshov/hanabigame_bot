@@ -394,14 +394,14 @@ class Controller:
                 if player.is_request_card_number_to_trash():
                     logger.info('branch move_to_trash')
                     self.move_to_trash(player, text)
-                if player.is_request_card_number_to_put():
+                elif player.is_request_card_number_to_put():
                     logger.info('branch move_to_put')
                     self.move_to_table(player, text)
-                if player.is_request_hint_recipient():
+                elif player.is_request_hint_recipient():
                     self.request_for_type_of_hint(player, text)
-                if player.is_request_hint_color():
+                elif player.is_request_hint_color():
                     self.hint_color(player, text)
-                if player.is_request_hint_value():
+                elif player.is_request_hint_value():
                     self.hint_value(player, text)
 
             game.save()

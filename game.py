@@ -211,6 +211,7 @@ class Game(metaclass=Singleton):
         self.trash.append(trashed_card)
         self.hints = min(self.hints + 1, 8)
         self.move_card_to_player(player)
+        player.end_turn()
         return trashed_card
 
     def move_to_table(self, player: Player, card_number: int) -> Tuple[bool, Card]:
