@@ -185,15 +185,25 @@ class Player:
     #     return trashed_card
 
     def get_card(self, card_number: int) -> Card:
+        logger = logging.getLogger('hanabigame.player.get_card')
+        logger.info('start')
         self.load()
+        logger.info('loaded')
         card = self.hand.pop(card_number)
+        logger.info('get card ' + str(card) + 'other: ' + str(self.hand))
         self.save()
+        logger.info('saved')
         return card
 
     def put_card(self, card: Card) -> None:
+        logger = logging.getLogger('hanabigame.player.put_card')
+        logger.info('start with card ' + str(card))
         self.load()
+        logger.info('loaded with hand: ' + str(self.hand))
         self.hand.append(card)
+        logger.info('appended hand = ' + str(self.hand))
         self.save()
+        logger.info('saved')
 
     # def move_to_table(self, card_number: int) -> Card:
     #     self.load()
