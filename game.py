@@ -76,7 +76,7 @@ class Game:
         self.players: List[Player] = []
 
     def __str__(self) -> str:
-        return 'Game(id: {}, state: {}, hints: {}, lives: {}, table: {}, trash: {}, stack: {})'.format(
+        return 'Game(id: {}, state: {}, hints: {}, lives: {}, table: {}, trash: {}, stack: {}, player_ids: {})'.format(
             self.id,
             str(self.state),
             str(self.hints),
@@ -84,6 +84,7 @@ class Game:
             str(self.table),
             str(self.trash),
             str(self.stack),
+            ' '.join(map(lambda o: o.id, self.players)),
         )
 
     def load(self) -> None:
