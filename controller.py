@@ -405,3 +405,4 @@ class Controller:
                     self.hint_value(player, text)
 
             game.save()
+        player.save()

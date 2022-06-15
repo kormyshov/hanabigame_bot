@@ -67,12 +67,7 @@ class Player:
         return self.name
 
     def set_name(self, name: str) -> None:
-        logger = logging.getLogger('hanabigame.player.set_name')
-        logger.info('start')
-        if self.get_name() != name:
-            logger.info('different name')
-            self.name = name
-            self.save()
+        self.name = name
 
     def is_not_playing(self) -> bool:
         self.load()
@@ -98,12 +93,10 @@ class Player:
             self.state = PlayerState.CONFIRM_FINISH_WAITING_GAME
         else:
             raise UnexpectedPlayerState
-        self.save()
 
     def reject_connect_to_game(self) -> None:
         self.load()
         self.state = PlayerState.NOT_PLAYING
-        self.save()
 
     def reject_finish_game(self) -> None:
         self.load()
@@ -113,53 +106,36 @@ class Player:
             self.state = PlayerState.WAITING_START_GAME
         else:
             raise UnexpectedPlayerState
-        self.save()
 
     def request_move_to_trash(self) -> int:
         self.load()
         self.state = PlayerState.REQUEST_MOVE_TO_TRASH
-        self.save()
         return self.hand.len()
 
     def request_move_to_table(self) -> int:
         self.load()
         self.state = PlayerState.REQUEST_MOVE_TO_TABLE
-        self.save()
         return self.hand.len()
 
     def request_hint_recipient(self) -> None:
         self.load()
         self.state = PlayerState.REQUEST_HINT_RECIPIENT
-        self.save()
 
     def request_hint_type(self, recipient_number: int) -> None:
         self.load()
         self.state = PlayerState.REQUEST_HINT_TYPE_ONE + recipient_number
-        self.save()
 
     def request_hint_color(self) -> None:
         self.load()
         self.state = PlayerState.REQUEST_HINT_ONE_COLOR + (self.state - PlayerState.REQUEST_HINT_TYPE_ONE)
-        self.save()
 
     def request_hint_value(self) -> None:
         self.load()
         self.state = PlayerState.REQUEST_HINT_ONE_VALUE + (self.state - PlayerState.REQUEST_HINT_TYPE_ONE)
-        self.save()
-
-    # def create_new_game(self):
-    #     game_id = hashlib.md5(str(int(self.id) + random.randint(-1000000, 1000000)).encode('utf-8')).hexdigest()
-    #     self.game = game.Game(game_id)
-    #     self.game.to_waiting_start(self)
-    #     self.state = PlayerState.WAITING_START_GAME
-    #     self.save()
-    #
-    #     return game_id
 
     def request_game_code_to_connect(self) -> None:
         self.load()
         self.state = PlayerState.REQUEST_GAME_CODE_TO_CONNECT
-        self.save()
 
     def is_request_game_code_to_connect(self) -> bool:
         self.load()
@@ -172,17 +148,6 @@ class Player:
         logger.info('set game_id')
         self.state = PlayerState.WAITING_START_GAME
         logger.info('set state')
-        self.save()
-        logger.info('player saved')
-
-    # def move_to_trash(self, card_number: int) -> Card:
-    #     self.load()
-    #     trashed_card = self.hand.pop(card_number)
-    #     self.game.add_to_trash(trashed_card)
-    #     new_card = self.game.take_card()
-    #     self.hand.append(new_card)
-    #     self.save()
-    #     return trashed_card
 
     def get_card(self, card_number: int) -> Card:
         logger = logging.getLogger('hanabigame.player.get_card')
@@ -191,8 +156,6 @@ class Player:
         logger.info('loaded')
         card = self.hand.pop(card_number)
         logger.info('get card ' + str(card) + 'other: ' + str(self.hand))
-        self.save()
-        logger.info('saved')
         return card
 
     def put_card(self, card: Card) -> None:
@@ -202,17 +165,6 @@ class Player:
         logger.info('loaded with hand: ' + str(self.hand))
         self.hand.append(card)
         logger.info('appended hand = ' + str(self.hand))
-        self.save()
-        logger.info('saved')
-
-    # def move_to_table(self, card_number: int) -> Card:
-    #     self.load()
-    #     put_card = self.hand.pop(card_number)
-    #     success = self.game.add_to_table(put_card)
-    #     new_card = self.game.take_card()
-    #     self.hand.append(new_card)
-    #     self.save()
-    #     return put_card, success
 
     def is_request_card_number_to_trash(self) -> bool:
         self.load()
@@ -258,9 +210,7 @@ class Player:
         self.load()
         self.state = PlayerState.PLAYING
         self.hand = hand
-        self.save()
 
     def end_turn(self) -> None:
         self.load()
         self.state = PlayerState.PLAYING
-        self.save()
