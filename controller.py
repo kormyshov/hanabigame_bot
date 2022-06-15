@@ -372,6 +372,8 @@ class Controller:
             elif text == constants.START_GAME:
                 logger.info('branch start_game')
                 self.start_game()
+                Game().save()
+                return
             elif text == constants.LOOK_TABLE:
                 self.look_table(player)
             elif text == constants.LOOK_TRASH:

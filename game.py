@@ -185,6 +185,7 @@ class Game(metaclass=Singleton):
 
         for i, p in enumerate(self.players):
             p.start_game(Sequence(lst[i * cnt:(i + 1) * cnt]))
+            p.save()
 
         self.stack = Sequence(lst[cnt * len(self.players):])
         self.state = GameState.TURN_PLAYER_ONE
