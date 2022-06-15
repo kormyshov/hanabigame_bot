@@ -93,8 +93,13 @@ class Controller:
         for i, p in enumerate(game.players):
             logger.info('go for i = ' + str(i))
             if i == num:
+                logger.info('into i == num')
                 self.viewer.view(p.id, constants.YOUR_TURN, keyboards.get_turn())
             else:
+                logger.info('into i != num')
+                logger.info('game = ' + str(game))
+                logger.info('players len = ' + str(len(game.players)))
+                logger.info('player = ' + str(game.players[num]))
                 self.viewer.view(
                     p.id,
                     constants.TURN_ANOTHER_PLAYER.format(game.players[num].get_name()),
