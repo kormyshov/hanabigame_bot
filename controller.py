@@ -89,9 +89,9 @@ class Controller:
 
     def turn_player(self, game: Game, num: int) -> None:
         logger = logging.getLogger('hanabigame.main.turn_player')
-        logger.info('start')
+        logger.info('start with num = ' + str(num))
         for i, p in enumerate(game.players):
-            logger.info('go for')
+            logger.info('go for i = ' + str(i))
             if i == num:
                 self.viewer.view(p.id, constants.YOUR_TURN, keyboards.get_turn())
             else:
