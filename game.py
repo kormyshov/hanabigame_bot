@@ -249,7 +249,7 @@ class Game:
         self.state += 1
         if self.state - len(self.players) == GameState.TURN_PLAYER_ONE:
             self.state = GameState.TURN_PLAYER_ONE
-        return self.state - GameState.TURN_PLAYER_ONE
+        return int(self.state - GameState.TURN_PLAYER_ONE)
 
     def is_player_turn(self, player: Player) -> bool:
-        return self.players[(self.state - GameState.TURN_PLAYER_ONE) % 5] == player
+        return self.players[int(self.state - GameState.TURN_PLAYER_ONE) % 5] == player
