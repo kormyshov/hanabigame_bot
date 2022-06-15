@@ -24,9 +24,9 @@ class Player:
     def __str__(self) -> str:
         return 'Player(id: {}, name: {}, state: {}, game_id: {}, hand: {})'.format(
             self.id,
-            self.name,
+            str(self.name),
             str(self.state.name),
-            self.game_id,
+            str(self.game_id),
             str(self.hand),
         )
 

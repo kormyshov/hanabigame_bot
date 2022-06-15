@@ -99,7 +99,10 @@ class Controller:
                 logger.info('into i != num')
                 logger.info('game = ' + str(game))
                 logger.info('players len = ' + str(len(game.players)))
-                logger.info('player = ' + str(game.players[num]))
+                try:
+                    logger.info('player = ' + str(game.players[num]))
+                except Exception as e:
+                    logger.info(str(e))
                 self.viewer.view(
                     p.id,
                     constants.TURN_ANOTHER_PLAYER.format(game.players[num].get_name()),
