@@ -34,7 +34,7 @@ class Player:
         logger = logging.getLogger('hanabigame.player.load')
         logger.info('start')
         if not self.loaded:
-            logger.info('not loaded')
+            logger.info('not loaded id = ' + self.id)
             try:
                 response: PlayerORM = self.database.get_player_info(self.id)
                 logger.info('get PlayerORM')
@@ -46,7 +46,7 @@ class Player:
                 logger.info('player doesnt exist in db')
 
             self.loaded = True
-        logger.info('loaded')
+        logger.info('loaded id = ' + self.id)
 
     def save(self) -> None:
         logger = logging.getLogger('hanabigame.player.save')
