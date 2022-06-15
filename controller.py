@@ -365,6 +365,7 @@ class Controller:
             elif text == constants.YES_FINISH_GAME:
                 logger.info('branch confirm_finish_game')
                 self.confirm_finish_game()
+                Game.clear()
                 return
             elif text == constants.NO_CONTINUE_GAME:
                 logger.info('branch reject_finish_game')
@@ -373,6 +374,7 @@ class Controller:
                 logger.info('branch start_game')
                 self.start_game()
                 game.save()
+                Game.clear()
                 return
             elif text == constants.LOOK_TABLE:
                 self.look_table(player)
@@ -407,4 +409,5 @@ class Controller:
                     self.hint_value(player, text)
 
             game.save()
+            Game.clear()
         player.save()
