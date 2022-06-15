@@ -78,7 +78,7 @@ class Game:
     def __str__(self) -> str:
         return 'Game(id: {}, state: {}, hints: {}, lives: {}, table: {}, trash: {}, stack: {})'.format(
             self.id,
-            str(self.state.name),
+            str(self.state),
             str(self.hints),
             str(self.lives),
             str(self.table),
