@@ -1,7 +1,6 @@
 from dictbase import Dictbase
 from null_viewer import NullViewer, ViewORM
 from controller import Controller
-from game import Game
 import constants
 import keyboards
 
@@ -17,7 +16,6 @@ def test_create_game():
         ViewORM('1', game_id, keyboards.get_waiting_second_player()),
     ]
     assert viewer.get_output() == expected
-    Game.clear()
 
 
 def test_create_and_request_finish_game():
@@ -33,7 +31,6 @@ def test_create_and_request_finish_game():
         ViewORM('1', constants.ARE_YOU_SURE, keyboards.get_confirm_finish_game()),
     ]
     assert viewer.get_output() == expected
-    Game.clear()
 
 
 def test_create_and_request_finish_game_reject():
@@ -51,7 +48,6 @@ def test_create_and_request_finish_game_reject():
         ViewORM('1', constants.LETS_CONTINUE, keyboards.get_waiting_second_player()),
     ]
     assert viewer.get_output() == expected
-    Game.clear()
 
 
 def test_create_and_request_finish_game_confirm():
@@ -71,7 +67,6 @@ def test_create_and_request_finish_game_confirm():
     assert viewer.get_output() == expected
     assert len(db.games) == 0
     assert len(db.players) == 0
-    Game.clear()
 
 
 def test_connect_game():
@@ -81,7 +76,6 @@ def test_connect_game():
     controller.operate('1', 'Oscar', constants.CONNECT_TO_GAME)
     expected = [ViewORM('1', constants.ENTER_GAME_CODE_TO_CONNECT, keyboards.get_reject_connect_game())]
     assert viewer.get_output() == expected
-    Game.clear()
 
 
 def test_connect_and_reject_game():
@@ -95,7 +89,6 @@ def test_connect_and_reject_game():
         ViewORM('1', constants.ONBOARDING, keyboards.get_start_game()),
     ]
     assert viewer.get_output() == expected
-    Game.clear()
 
 
 def test_create_and_connect_game():
@@ -114,4 +107,3 @@ def test_create_and_connect_game():
         ViewORM('2', constants.YOU_HAS_BEEN_CONNECTED_TO_GAME, keyboards.get_waiting_start_game()),
     ]
     assert viewer.get_output() == expected
-    Game.clear()

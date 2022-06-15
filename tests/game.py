@@ -42,7 +42,6 @@ def test_get_table_info_started():
     g = Game()
     g.start()
     assert g.get_table_info() == TableInfo(Sequence(), 8, 3)
-    Game.clear()
 
 
 def test_get_table_info_add_to_table():
@@ -51,7 +50,6 @@ def test_get_table_info_add_to_table():
     a = Card(CardNumbers.ONE, CardColors.RAINBOW)
     g.add_to_table(a)
     assert g.get_table_info() == TableInfo(Sequence([a]), 8, 3)
-    Game.clear()
 
 
 def test_get_table_info_add_to_table_twice():
@@ -62,7 +60,6 @@ def test_get_table_info_add_to_table_twice():
     g.add_to_table(a)
     g.add_to_table(b)
     assert g.get_table_info() == TableInfo(Sequence([b]), 8, 3)
-    Game.clear()
 
 
 def test_get_trash_cards_empty():
@@ -87,7 +84,6 @@ def test_start_game():
     assert g.trash.len() == 0
     assert g.table.len() == 0
     assert g.stack.len() == 45
-    Game.clear()
 
 
 def test_take_card():
@@ -101,7 +97,6 @@ def test_take_card():
     c2 = g.take_card()
     assert g.stack.len() == 44
     assert c1 == c2
-    Game.clear()
 
 
 def test_move_card_to_player():
@@ -116,7 +111,6 @@ def test_move_card_to_player():
     assert g.stack.len() == 44
     assert p1.hand.len() == 6
     assert p1.hand.lst[-1] == c1
-    Game.clear()
 
 
 def test_move_to_trash():
@@ -132,4 +126,3 @@ def test_move_to_trash():
     assert g.trash == Sequence([c1])
     assert p1.hand.lst[-1] == c2
     assert g.stack.len() == 44
-    Game.clear()

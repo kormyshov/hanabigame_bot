@@ -33,18 +33,6 @@ class GameDoesntInit(Exception):
     pass
 
 
-class Singleton(type):
-    _instances = {}
-
-    def __call__(cls, *args, **kwargs):
-        if cls not in cls._instances:
-            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
-        return cls._instances[cls]
-
-    def clear(cls):
-        cls._instances.pop(cls, None)
-
-
 class TableInfo(NamedTuple):
     table: Sequence
     hints: Hint
@@ -74,7 +62,7 @@ def init_list() -> List[Card]:
     return lst
 
 
-class Game(metaclass=Singleton):
+class Game:
     def __init__(self) -> None:
         self.id: Optional[str] = None
         self.database: Optional[AbstractBase] = None
