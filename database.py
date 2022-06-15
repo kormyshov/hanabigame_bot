@@ -55,7 +55,8 @@ class Database(AbstractBase):
         }
         logger.info('set item = ' + str(item))
         table_players.put_item(Item=item)
-        logger.info('player put')
+        logger.info('put ORM')
+        logger.info('ORM = ' + str(player))
 
     def clear_player(self, player_id: str) -> None:
         logger = logging.getLogger('hanabigame.database.clear_player')
