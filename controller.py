@@ -395,16 +395,16 @@ class Controller:
             else:
                 if player.is_request_card_number_to_trash():
                     logger.info('branch move_to_trash')
-                    self.move_to_trash(player, text)
+                    self.move_to_trash(game, player, text)
                 elif player.is_request_card_number_to_put():
                     logger.info('branch move_to_put')
-                    self.move_to_table(player, text)
+                    self.move_to_table(game, player, text)
                 elif player.is_request_hint_recipient():
-                    self.request_for_type_of_hint(player, text)
+                    self.request_for_type_of_hint(game, player, text)
                 elif player.is_request_hint_color():
-                    self.hint_color(player, text)
+                    self.hint_color(game, player, text)
                 elif player.is_request_hint_value():
-                    self.hint_value(player, text)
+                    self.hint_value(game, player, text)
 
             game.save()
         player.save()
