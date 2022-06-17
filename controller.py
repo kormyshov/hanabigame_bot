@@ -5,7 +5,7 @@ import constants
 from abstract_base import AbstractBase
 from abstract_viewer import AbstractViewer
 from player import Player
-from game import Game, ConnectionResult, GameDoesntInit
+from game import Game, ConnectionResult, GameDoesntInit, GameIsEnded
 
 
 class Controller:
@@ -188,9 +188,12 @@ class Controller:
                 ),
             )
 
-        player_number = game.next_turn()
-        logger.info('next turn')
-        self.turn_player(game, player_number)
+        try:
+            player_number = game.next_turn()
+            logger.info('next turn')
+            self.turn_player(game, player_number)
+        except GameIsEnded:
+            pass  # TODO: сделать вызов окончания игры и подсчёта результата
 
     def request_for_move_to_table(self, player: Player) -> None:
         logger = logging.getLogger('hanabigame.main.request_for_move_to_table')

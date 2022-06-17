@@ -42,6 +42,7 @@ class GameState(IntEnum):
     TURN_PLAYER_THREE_LAST_FIVE = 32
     TURN_PLAYER_FOUR_LAST_FIVE = 33
     TURN_PLAYER_FIVE_LAST_FIVE = 34
+    LAST_TURN = 35
 
 
 class GameORM(NamedTuple):

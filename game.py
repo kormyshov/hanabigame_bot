@@ -33,6 +33,10 @@ class GameDoesntInit(Exception):
     pass
 
 
+class GameIsEnded(Exception):
+    pass
+
+
 class TableInfo(NamedTuple):
     table: Sequence
     hints: Hint
@@ -246,10 +250,16 @@ class Game:
         return card_numbers
 
     def next_turn(self) -> int:
+        if self.state == GameState.LAST_TURN:
+            raise GameIsEnded
         self.state += 1
-        if self.state - len(self.players) == GameState.TURN_PLAYER_ONE:
-            self.state = GameState.TURN_PLAYER_ONE
-        return int(self.state - GameState.TURN_PLAYER_ONE)
+        if 10 <= self.state.value <= 34 and self.state.value // 5 - 2 == self.state.value % 5:
+            t = self.state.value % 5
+            self.state = GameState.LAST_TURN
+            return t
+        if (self.state.value - len(self.players)) % 5 == 0:
+            self.state -= self.state.value % 5
+        return int(self.state.value - GameState.TURN_PLAYER_ONE.value)
 
     def is_player_turn(self, player: Player) -> bool:
         return self.players[int(self.state - GameState.TURN_PLAYER_ONE) % 5] == player
