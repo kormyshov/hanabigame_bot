@@ -251,16 +251,14 @@ class Game:
         return card_numbers
 
     def next_turn(self) -> int:
-        if self.state == GameState.LAST_TURN:
+        if 35 <= self.state <= 39:
             raise GameIsEnded
         self.state += 1
         if 10 <= self.state <= 34 and self.state // 5 - 2 == self.state % 5:
-            t = self.state % 5
-            self.state = GameState.LAST_TURN
-            return int(t)
+            self.state = GameState.LAST_TURN_ONE + self.state % 5
         if (self.state - len(self.players)) % 5 == 0:
             self.state -= self.state % 5
-        return int(self.state - GameState.TURN_PLAYER_ONE)
+        return int(self.state % 5)
 
     def is_player_turn(self, player: Player) -> bool:
         return self.players[int(self.state - GameState.TURN_PLAYER_ONE) % 5] == player
