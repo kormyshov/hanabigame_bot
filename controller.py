@@ -81,8 +81,7 @@ class Controller:
         logger.info('start')
         game.start()
         logger.info('game started')
-        for i, p in enumerate(game.players):
-            self.viewer.view(p.id, constants.GAME_STARTED)
+        self.broadcast(constants.GAME_STARTED, game)
         logger.info('output messages')
         self.turn_player(game, 0)
         logger.info('end')
@@ -178,22 +177,13 @@ class Controller:
         logger.info('start')
         trashed_card = game.move_to_trash(player, int(card_number) - 1)
         logger.info('moved to trash and got trashed card')
-        for p in game.players:
-            logger.info('get player')
-            self.viewer.view(
-                p.id,
-                constants.PLAYER_HAS_TRASHED_CARD.format(
-                    player.name if player.id != p.id else constants.YOU,
-                    str(trashed_card),
-                ),
-            )
-
-        try:
-            player_number = game.next_turn()
-            logger.info('next turn')
-            self.turn_player(game, player_number)
-        except GameIsEnded:
-            pass  # TODO: сделать вызов окончания игры и подсчёта результата
+        self.broadcast(
+            constants.PLAYER_HAS_TRASHED_CARD.format(player.name, str(trashed_card)),
+            game,
+            constants.PLAYER_HAS_TRASHED_CARD.format(constants.YOU, str(trashed_card)),
+            player.id,
+        )
+        self.next_turn(game)
 
     def request_for_move_to_table(self, player: Player) -> None:
         logger = logging.getLogger('hanabigame.main.request_for_move_to_table')
@@ -207,28 +197,32 @@ class Controller:
         logger.info('start')
         success, put_card = game.move_to_table(player, int(card_number) - 1)
         logger.info('moved to table and got put card')
-        for p in game.players:
-            logger.info('get player')
-            if success:
-                self.viewer.view(
-                    p.id,
-                    constants.PLAYER_HAS_PUT_CARD.format(
-                        player.name if player.id != p.id else constants.YOU,
-                        str(put_card),
-                    ),
-                )
-            else:
-                self.viewer.view(
-                    p.id,
-                    constants.PLAYER_TRIED_TO_PUT_CARD.format(
-                        player.name if player.id != p.id else constants.YOU,
-                        str(put_card),
-                    ),
-                )
+        if success:
+            self.broadcast(
+                constants.PLAYER_HAS_PUT_CARD.format(player.name, str(put_card)),
+                game,
+                constants.PLAYER_HAS_PUT_CARD.format(constants.YOU, str(put_card)),
+                player.id,
+            )
+        else:
+            self.broadcast(
+                constants.PLAYER_TRIED_TO_PUT_CARD.format(player.name, str(put_card)),
+                game,
+                constants.PLAYER_TRIED_TO_PUT_CARD.format(constants.YOU, str(put_card)),
+                player.id,
+            )
+        self.next_turn(game)
 
-        player_number = game.next_turn()
-        logger.info('next turn')
-        self.turn_player(game, player_number)
+    def broadcast(self, message: str, game: Game, self_message: str = None, player_id: str = None):
+        for p in game.players:
+            self.viewer.view(p.id, message if player_id is None or player_id != p.id else self_message)
+
+    def next_turn(self, game: Game):
+        try:
+            player_number = game.next_turn()
+            self.turn_player(game, player_number)
+        except GameIsEnded:
+            pass  # TODO: сделать вызов окончания игры и подсчёта результата
 
     def request_for_hint_recipient(self, player, game):
         logger = logging.getLogger('hanabigame.main.request_for_hint_recipient')

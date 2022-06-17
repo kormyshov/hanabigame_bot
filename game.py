@@ -223,6 +223,7 @@ class Game:
             if self.lives == 0:
                 pass  # TODO: сделать обработку конца игры
         self.move_card_to_player(player)
+        player.end_turn()
         return success, put_card
 
     def add_to_table(self, card: Card) -> bool:
