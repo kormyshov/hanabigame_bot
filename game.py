@@ -186,7 +186,7 @@ class Game:
         try:
             return self.stack.pop()
         except IndexError:
-            self.state += 5
+            self.state += 5 * (self.state - 4)
             raise GameStackIsEmpty
 
     def move_card_to_player(self, player: Player) -> None:
