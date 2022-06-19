@@ -224,10 +224,9 @@ class Controller:
         except GameIsEnded:
             pass  # TODO: сделать вызов окончания игры и подсчёта результата
 
-    def request_for_hint_recipient(self, player, game):
+    def request_for_hint_recipient(self, game: Game, player: Player) -> None:
         logger = logging.getLogger('hanabigame.main.request_for_hint_recipient')
         logger.info('start')
-        game.load()
         names = [p.get_name() for p in game.players if p.id != player.id]
         logger.info('get names ' + ', '.join(names))
         if len(names) > 1:
@@ -235,103 +234,86 @@ class Controller:
             player.request_hint_recipient()
             self.viewer.view(player.id, constants.ENTER_PLAYER_NAME, keyboards.get_request_player_name(names))
         else:
-            self.request_for_type_of_hint(player, game, names[0])
+            self.request_for_type_of_hint(game, player, names[0])
 
-    def request_for_type_of_hint(self, player, game, recipient_name):
+    def request_for_type_of_hint(self, game: Game, player: Player, recipient_name: str) -> None:
         logger = logging.getLogger('hanabigame.main.request_for_type_of_hint')
         logger.info('start')
-        game.load()
         recipient_number = 0
         for i, p in enumerate(game.players):
             if p.get_name() == recipient_name:
                 recipient_number = i
         player.request_hint_type(recipient_number)
         logger.info('switch player state')
-        self.viewer.view(player.id, constants.ENTER_TYPE_OF_HINT, keyboards.type_of_hint)
+        self.viewer.view(player.id, constants.ENTER_TYPE_OF_HINT, keyboards.get_type_of_hint())
 
-    def request_for_hint_color(self, player):
+    def request_for_hint_color(self, player: Player) -> None:
         logger = logging.getLogger('hanabigame.main.request_for_hint_color')
         logger.info('start')
         player.request_hint_color()
         logger.info('switch player state')
-        self.viewer.view(player.id, constants.ENTER_COLOR, keyboards.colors)
+        self.viewer.view(player.id, constants.ENTER_COLOR, keyboards.get_colors())
 
-    def request_for_hint_value(self, player):
+    def request_for_hint_value(self, player: Player) -> None:
         logger = logging.getLogger('hanabigame.main.request_for_hint_value')
         logger.info('start')
         player.request_hint_value()
         logger.info('switch player state')
-        self.viewer.view(player.id, constants.ENTER_VALUE, keyboards.values)
+        self.viewer.view(player.id, constants.ENTER_VALUE, keyboards.get_values())
 
-    def hint_color(self, player, game, color):
+    def hint_color(self, game: Game, player: Player, color: str) -> None:
         logger = logging.getLogger('hanabigame.main.hint_color')
         logger.info('start')
         recipient_number = player.get_recipient_hint_number()
         logger.info('get recipient number = ' + str(recipient_number) + ' with type ' + str(type(recipient_number)))
-        game.load()
-        card_numbers = game.hint_color(recipient_number, color)
+        card_numbers = game.hint_color(player, recipient_number, color)
         logger.info('get card numbers ' + ','.join(map(str, card_numbers)))
-        for i, p in enumerate(game.players):
-            if i == recipient_number:
-                self.viewer.view(
-                    p.id,
-                    constants.PLAYER_HINT_COLOR_TO_YOU.format(
-                        player.get_name(),
-                        color,
-                        ', '.join(map(str, card_numbers)),
-                    ),
-                )
-            elif p.id == player.id:
-                self.viewer.view(p.id, constants.YOU_HAS_HINT.format(game.players[recipient_number].get_name()))
-            else:
-                self.viewer.view(
-                    p.id,
-                    constants.PLAYER_HINT_COLOR_TO_OTHER.format(
-                        player.get_name(),
-                        game.players[recipient_number].get_name(),
-                        color,
-                        ', '.join(map(str, card_numbers)),
-                    ),
-                )
+        self.broadcast_hint(
+            game,
+            player,
+            recipient_number,
+            constants.PLAYER_HINT_COLOR_TO_YOU.format(player.get_name(), color, ', '.join(map(str, card_numbers))),
+            constants.PLAYER_HINT_COLOR_TO_OTHER.format(
+                player.get_name(),
+                game.players[recipient_number].get_name(),
+                color,
+                ', '.join(map(str, card_numbers)),
+            ),
+            constants.YOU_HAS_HINT.format(game.players[recipient_number].get_name()),
+        )
+        self.next_turn(game)
 
-        player_number = game.next_turn()
-        logger.info('next turn')
-        self.turn_player(game.players, int(player_number))
-
-    def hint_value(self, player, game, value):
+    def hint_value(self, game: Game, player: Player, value: str) -> None:
         logger = logging.getLogger('hanabigame.main.hint_value')
         logger.info('start')
         recipient_number = player.get_recipient_hint_number()
         logger.info('get recipient number = ' + str(recipient_number) + ' with type ' + str(type(recipient_number)))
-        game.load()
-        card_numbers = game.hint_value(recipient_number, value)
+        card_numbers = game.hint_value(player, recipient_number, value)
         logger.info('get card numbers ' + ','.join(map(str, card_numbers)))
+        self.broadcast_hint(
+            game,
+            player,
+            recipient_number,
+            constants.PLAYER_HINT_VALUE_TO_YOU.format(player.get_name(), value, ', '.join(map(str, card_numbers))),
+            constants.PLAYER_HINT_VALUE_TO_OTHER.format(
+                player.get_name(),
+                game.players[recipient_number].get_name(),
+                value,
+                ', '.join(map(str, card_numbers)),
+            ),
+            constants.YOU_HAS_HINT.format(game.players[recipient_number].get_name()),
+        )
+        self.next_turn(game)
+
+    def broadcast_hint(self, game: Game, player: Player, recipient_number: int,
+                       hint: str, common_hint: str, self_hint: str):
         for i, p in enumerate(game.players):
             if i == recipient_number:
-                self.viewer.view(
-                    p.id,
-                    constants.PLAYER_HINT_VALUE_TO_YOU.format(
-                        player.get_name(),
-                        value,
-                        ', '.join(map(str, card_numbers)),
-                    ),
-                )
+                self.viewer.view(p.id, hint)
             elif p.id == player.id:
-                self.viewer.view(p.id, constants.YOU_HAS_HINT.format(game.players[recipient_number].get_name()))
+                self.viewer.view(p.id, self_hint)
             else:
-                self.viewer.view(
-                    p.id,
-                    constants.PLAYER_HINT_VALUE_TO_OTHER.format(
-                        player.get_name(),
-                        game.players[recipient_number].get_name(),
-                        value,
-                        ', '.join(map(str, card_numbers)),
-                    ),
-                )
-
-        player_number = game.next_turn()
-        logger.info('next turn')
-        self.turn_player(game.players, int(player_number))
+                self.viewer.view(p.id, common_hint)
 
     def operate(self, player_id: str, player_name: str, text: str):
         logger = logging.getLogger('hanabigame.main.message_reply')
@@ -392,7 +374,7 @@ class Controller:
                 logger.info('branch request_for_move_to_table')
                 self.request_for_move_to_table(player)
             elif text == constants.HINT:
-                self.request_for_hint_recipient(player)
+                self.request_for_hint_recipient(game, player)
             elif text == constants.COLOR:
                 self.request_for_hint_color(player)
             elif text == constants.VALUE:

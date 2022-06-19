@@ -238,16 +238,20 @@ class Game:
         self.table.append(card)
         return True
 
-    def hint_color(self, recipient_number: int, color: CardColors) -> List[int]:
+    def hint_color(self, player: Player, recipient_number: int, color_str: str) -> List[int]:
         recipient = self.players[recipient_number]
+        color = next(filter(lambda c: c.value == color_str, CardColors))
         card_numbers = recipient.get_card_numbers_with_color(color)
         self.hints -= 1
+        player.end_turn()
         return card_numbers
 
-    def hint_value(self, recipient_number: int, value: CardNumbers) -> List[int]:
+    def hint_value(self, player: Player, recipient_number: int, value_str: str) -> List[int]:
         recipient = self.players[recipient_number]
+        value = next(filter(lambda c: c.value == int(value_str), CardNumbers))
         card_numbers = recipient.get_card_numbers_with_value(value)
         self.hints -= 1
+        player.end_turn()
         return card_numbers
 
     def next_turn(self) -> int:
