@@ -266,4 +266,4 @@ class Game:
         return int(self.state % 5)
 
     def is_player_turn(self, player: Player) -> bool:
-        return self.players[int(self.state - GameState.TURN_PLAYER_ONE) % 5] == player
+        return self.players[int(self.state - GameState.TURN_PLAYER_ONE) % 5].id == player.id
