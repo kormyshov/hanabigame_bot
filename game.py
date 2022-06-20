@@ -234,7 +234,8 @@ class Game:
             index = self.table.index(previous_card)
             self.table.pop(index)
         except DontExistCard:
-            pass
+            if card in self.table:
+                return False
         self.table.append(card)
         return True
 
