@@ -315,6 +315,10 @@ class Controller:
             else:
                 self.viewer.view(p.id, common_hint)
 
+    def goto_menu(self, player: Player):
+        player.set_playing_state()
+        self.viewer.view(player.id, '', keyboards.get_turn())
+
     def operate(self, player_id: str, player_name: str, text: str):
         logger = logging.getLogger('hanabigame.main.message_reply')
         logger.info('start with message.text = ' + text)
@@ -379,6 +383,8 @@ class Controller:
                 self.request_for_hint_color(player)
             elif text == constants.VALUE:
                 self.request_for_hint_value(player)
+            elif text == constants.BACK:
+                self.goto_menu(player)
             else:
                 if player.is_request_card_number_to_trash():
                     logger.info('branch move_to_trash')

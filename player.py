@@ -211,6 +211,6 @@ class Player:
         self.state = PlayerState.PLAYING
         self.hand = hand
 
-    def end_turn(self) -> None:
+    def set_playing_state(self) -> None:
         self.load()
         self.state = PlayerState.PLAYING

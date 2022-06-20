@@ -205,7 +205,7 @@ class Game:
         self.trash.append(trashed_card)
         self.hints = min(self.hints + 1, 8)
         self.move_card_to_player(player)
-        player.end_turn()
+        player.set_playing_state()
         return trashed_card
 
     def move_to_table(self, player: Player, card_number: int) -> Tuple[bool, Card]:
@@ -223,7 +223,7 @@ class Game:
             if self.lives == 0:
                 pass  # TODO: сделать обработку конца игры
         self.move_card_to_player(player)
-        player.end_turn()
+        player.set_playing_state()
         return success, put_card
 
     def add_to_table(self, card: Card) -> bool:
@@ -244,7 +244,7 @@ class Game:
         color = next(filter(lambda c: c.value == color_str or c.value == CardColors.RAINBOW.value, CardColors))
         card_numbers = recipient.get_card_numbers_with_color(color)
         self.hints -= 1
-        player.end_turn()
+        player.set_playing_state()
         return card_numbers
 
     def hint_value(self, player: Player, recipient_number: int, value_str: str) -> List[int]:
@@ -252,7 +252,7 @@ class Game:
         value = next(filter(lambda c: c.value == int(value_str), CardNumbers))
         card_numbers = recipient.get_card_numbers_with_value(value)
         self.hints -= 1
-        player.end_turn()
+        player.set_playing_state()
         return card_numbers
 
     def next_turn(self) -> int:
