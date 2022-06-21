@@ -234,7 +234,7 @@ class Game:
             index = self.table.index(previous_card)
             self.table.pop(index)
         except DontExistCard:
-            if card in self.table:
+            if len(self.table.get_card_numbers(lambda c: c.color == card.color)) > 0:
                 return False
         self.table.append(card)
         return True
