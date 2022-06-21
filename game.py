@@ -267,3 +267,9 @@ class Game:
 
     def is_player_turn(self, player: Player) -> bool:
         return self.players[int(self.state - GameState.TURN_PLAYER_ONE) % 5].id == player.id
+
+    def get_score(self):
+        score = 0
+        for n in CardNumbers:
+            score += n.value * len(self.table.get_card_numbers(lambda c: c.number == n))
+        return score

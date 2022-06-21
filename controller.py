@@ -222,7 +222,9 @@ class Controller:
             player_number = game.next_turn()
             self.turn_player(game, player_number)
         except GameIsEnded:
-            pass  # TODO: сделать вызов окончания игры и подсчёта результата
+            score = game.get_score()
+            self.broadcast(constants.SCORE.format(str(score)), game)
+            self.confirm_finish_game(game)
 
     def request_for_hint_recipient(self, game: Game, player: Player) -> None:
         logger = logging.getLogger('hanabigame.main.request_for_hint_recipient')
