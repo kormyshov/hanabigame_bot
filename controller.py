@@ -93,7 +93,7 @@ class Controller:
             logger.info('go for i = ' + str(i))
             if i == num:
                 logger.info('into i == num')
-                self.viewer.view(p.id, constants.YOUR_TURN, keyboards.get_turn())
+                self.viewer.view(p.id, constants.YOUR_TURN, keyboards.get_turn(game.hints > 0))
             else:
                 logger.info('into i != num')
                 logger.info('game = ' + str(game))

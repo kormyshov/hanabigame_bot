@@ -44,11 +44,18 @@ def get_waiting_turn() -> Tuple[str, ...]:
     )
 
 
-def get_turn() -> Tuple[str, ...]:
+def get_turn(can_hint: bool) -> Tuple[str, ...]:
     return (
         constants.PUT,
         constants.TRASH,
         constants.HINT,
+        constants.LOOK_HANDS,
+        constants.LOOK_TABLE,
+        constants.LOOK_TRASH,
+        constants.FINISH_GAME,
+    ) if can_hint else (
+        constants.PUT,
+        constants.TRASH,
         constants.LOOK_HANDS,
         constants.LOOK_TABLE,
         constants.LOOK_TRASH,
