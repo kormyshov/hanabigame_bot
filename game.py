@@ -241,7 +241,7 @@ class Game:
 
     def hint_color(self, player: Player, recipient_number: int, color_str: str) -> List[int]:
         recipient = self.players[recipient_number]
-        color = next(filter(lambda c: c.value == color_str or c.value == CardColors.RAINBOW.value, CardColors))
+        color = next(filter(lambda c: c.value == color_str or c.value == CardColors.RAINBOW, CardColors))
         card_numbers = recipient.get_card_numbers_with_color(color)
         self.hints -= 1
         player.set_playing_state()
