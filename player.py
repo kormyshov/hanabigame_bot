@@ -198,7 +198,7 @@ class Player:
 
     def get_card_numbers_with_color(self, color: CardColors) -> List[int]:
         self.load()
-        card_numbers = self.hand.get_card_numbers(lambda c: c.color == color)
+        card_numbers = self.hand.get_card_numbers(lambda c: c.color == color or c.color == CardColors.RAINBOW)
         return card_numbers
 
     def get_card_numbers_with_value(self, value: CardNumbers) -> List[int]:
