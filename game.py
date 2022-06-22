@@ -219,9 +219,9 @@ class Game:
         else:
             self.trash.append(put_card)
             self.lives -= 1
-            success = False
             if self.lives == 0:
-                pass  # TODO: сделать обработку конца игры
+                raise GameIsEnded
+            success = False
         self.move_card_to_player(player)
         player.set_playing_state()
         return success, put_card

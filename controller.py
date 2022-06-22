@@ -195,23 +195,27 @@ class Controller:
     def move_to_table(self, game: Game, player: Player, card_number: str) -> None:
         logger = logging.getLogger('hanabigame.main.move_to_table')
         logger.info('start')
-        success, put_card = game.move_to_table(player, int(card_number) - 1)
-        logger.info('moved to table and got put card')
-        if success:
-            self.broadcast(
-                constants.PLAYER_HAS_PUT_CARD.format(player.name, str(put_card)),
-                game,
-                constants.PLAYER_HAS_PUT_CARD.format(constants.YOU, str(put_card)),
-                player.id,
-            )
-        else:
-            self.broadcast(
-                constants.PLAYER_TRIED_TO_PUT_CARD.format(player.name, str(put_card)),
-                game,
-                constants.PLAYER_TRIED_TO_PUT_CARD.format(constants.YOU, str(put_card)),
-                player.id,
-            )
-        self.next_turn(game)
+        try:
+            success, put_card = game.move_to_table(player, int(card_number) - 1)
+            logger.info('moved to table and got put card')
+            if success:
+                self.broadcast(
+                    constants.PLAYER_HAS_PUT_CARD.format(player.name, str(put_card)),
+                    game,
+                    constants.PLAYER_HAS_PUT_CARD.format(constants.YOU, str(put_card)),
+                    player.id,
+                )
+            else:
+                self.broadcast(
+                    constants.PLAYER_TRIED_TO_PUT_CARD.format(player.name, str(put_card)),
+                    game,
+                    constants.PLAYER_TRIED_TO_PUT_CARD.format(constants.YOU, str(put_card)),
+                    player.id,
+                )
+            self.next_turn(game)
+        except GameIsEnded:
+            self.broadcast(constants.SCORE.format('0'), game)
+            self.confirm_finish_game(game)
 
     def broadcast(self, message: str, game: Game, self_message: str = None, player_id: str = None):
         for p in game.players:
