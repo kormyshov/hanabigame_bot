@@ -319,7 +319,7 @@ class Controller:
 
     def goto_menu(self, game: Game, player: Player):
         player.set_playing_state()
-        self.viewer.view(player.id, '', keyboards.get_turn(game.hints > 0))
+        self.viewer.view(player.id, constants.YOUR_TURN, keyboards.get_turn(game.hints > 0))
 
     def operate(self, player_id: str, player_name: str, text: str):
         logger = logging.getLogger('hanabigame.main.message_reply')
