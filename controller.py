@@ -123,7 +123,7 @@ class Controller:
         logger.info('player rejected finishing')
         if player.is_playing():
             if game.is_player_turn(player):
-                self.viewer.view(player.id, constants.LETS_CONTINUE, keyboards.get_turn())
+                self.viewer.view(player.id, constants.LETS_CONTINUE, keyboards.get_turn(game.hints > 0))
             else:
                 self.viewer.view(player.id, constants.LETS_CONTINUE, keyboards.get_waiting_turn())
         else:
@@ -317,9 +317,9 @@ class Controller:
             else:
                 self.viewer.view(p.id, common_hint)
 
-    def goto_menu(self, player: Player):
+    def goto_menu(self, game: Game, player: Player):
         player.set_playing_state()
-        self.viewer.view(player.id, '', keyboards.get_turn())
+        self.viewer.view(player.id, '', keyboards.get_turn(game.hints > 0))
 
     def operate(self, player_id: str, player_name: str, text: str):
         logger = logging.getLogger('hanabigame.main.message_reply')
@@ -386,7 +386,7 @@ class Controller:
             elif text == constants.VALUE:
                 self.request_for_hint_value(player)
             elif text == constants.BACK:
-                self.goto_menu(player)
+                self.goto_menu(game, player)
             else:
                 if player.is_request_card_number_to_trash():
                     logger.info('branch move_to_trash')
