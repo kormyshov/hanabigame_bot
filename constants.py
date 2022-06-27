@@ -16,6 +16,7 @@ LETS_CONTINUE = 'OK! Let\'s continue!'
 
 GAME_STARTED = 'Game has been started'
 GAME_FINISHED = 'Game has been finished'
+GAME_FAILED = 'Game is finished, because {} has got the last live'
 GAME_CREATED = 'A new game has been created.\nSend this code to your friends:'
 
 ENTER_GAME_CODE_TO_CONNECT = 'Write or forward a game code to connect'

@@ -214,6 +214,12 @@ class Controller:
                 )
             self.next_turn(game)
         except GameIsEnded:
+            self.broadcast(
+                constants.GAME_FAILED.format(player.name),
+                game,
+                constants.GAME_FAILED.format(constants.YOU),
+                player.id,
+            )
             self.broadcast(constants.SCORE.format('0'), game)
             self.confirm_finish_game(game)
 
