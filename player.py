@@ -25,7 +25,7 @@ class Player:
         return 'Player(id: {}, name: {}, state: {}, game_id: {}, hand: {})'.format(
             self.id,
             str(self.name),
-            str(self.state.name),
+            str(self.state),
             str(self.game_id),
             str(self.hand),
         )

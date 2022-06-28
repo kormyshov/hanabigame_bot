@@ -93,7 +93,6 @@ class Controller:
 
     def request_for_confirm_finish_game(self, player: Player) -> None:
         logger = logging.getLogger('hanabigame.controller.request_for_confirm_finish_game')
-        logger.info('tut')
         logger.info('player = %s', str(player))
         player.confirm_finish_game()
         self.viewer.view(player.id, constants.ARE_YOU_SURE, keyboards.get_confirm_finish_game())
