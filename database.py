@@ -20,11 +20,9 @@ class Database(AbstractBase):
 
     def get_player_info(self, player_id: str) -> PlayerORM:
         logger = logging.getLogger('hanabigame.database.get_player_info')
-        logger.info('start with player_id = ' + player_id)
+        logger.info('player_id = %s', player_id)
         table_players = self.dynamodb.Table('players')
-        logger.info('get table players')
         response = table_players.get_item(Key={'id': player_id})
-        logger.info('get response')
 
         if 'Item' not in response:
             logger.info('player doesnt exist in db')
@@ -37,15 +35,13 @@ class Database(AbstractBase):
             game_id=response['Item'].get('game_id', None),
             hand=loads(bytes(response['Item'].get('hand'))),
         )
-        logger.info('get ORM')
-        logger.info('ORM = ' + str(orm))
+        logger.info('return %s', str(orm))
         return orm
 
     def set_player_info(self, player: PlayerORM) -> None:
         logger = logging.getLogger('hanabigame.database.set_player_info')
-        logger.info('start')
+        logger.info('player = %s', str(player))
         table_players = self.dynamodb.Table('players')
-        logger.info('get table players')
         item = {
             'id': player.id,
             'name': player.name,
@@ -53,53 +49,43 @@ class Database(AbstractBase):
             'game_id': player.game_id,
             'hand': dumps(player.hand),
         }
-        logger.info('set item = ' + str(item))
         table_players.put_item(Item=item)
-        logger.info('put ORM')
-        logger.info('ORM = ' + str(player))
+        logger.info('end')
 
     def clear_player(self, player_id: str) -> None:
         logger = logging.getLogger('hanabigame.database.clear_player')
-        logger.info('start with player_id = ' + player_id)
+        logger.info('player_id = %s', player_id)
         table_players = self.dynamodb.Table('players')
-        logger.info('get table players')
         table_players.delete_item(Key={'id': player_id})
-        logger.info('delete row with player')
+        logger.info('end')
 
     def get_game_info(self, game_id: str) -> GameORM:
         logger = logging.getLogger('hanabigame.database.get_game_info')
-        logger.info('start with game_id = ' + game_id)
+        logger.info('game_id = %s', game_id)
         table_games = self.dynamodb.Table('games')
-        logger.info('get table games')
         response = table_games.get_item(Key={'id': game_id})
-        logger.info('get response')
 
         if 'Item' not in response:
             logger.info('game does not exist in db')
             raise GameDoesntExistInDB
 
-        try:
-            orm = GameORM(
-                id=game_id,
-                state=response['Item']['state'],
-                stack=loads(bytes(response['Item'].get('stack'))),
-                table=loads(bytes(response['Item'].get('table'))),
-                trash=loads(bytes(response['Item'].get('trash'))),
-                hints=response['Item'].get('hints', 0),
-                lives=response['Item'].get('lives', 0),
-                player_ids=list(response['Item'].get('player_ids', '').split()),
-            )
-            logger.info('get ORM = ' + str(orm))
-        except Exception as e:
-            print('exception: ' + str(e))
-
+        orm = GameORM(
+            id=game_id,
+            state=response['Item']['state'],
+            stack=loads(bytes(response['Item'].get('stack'))),
+            table=loads(bytes(response['Item'].get('table'))),
+            trash=loads(bytes(response['Item'].get('trash'))),
+            hints=response['Item'].get('hints', 0),
+            lives=response['Item'].get('lives', 0),
+            player_ids=list(response['Item'].get('player_ids', '').split()),
+        )
+        logger.info('return %s', str(orm))
         return orm
 
     def set_game_info(self, game: GameORM) -> None:
         logger = logging.getLogger('hanabigame.database.set_game_info')
-        logger.info('start')
+        logger.info('game = %s', str(game))
         table_games = self.dynamodb.Table('games')
-        logger.info('get table games')
         item = {
             'id': game.id,
             'state': int(game.state),
@@ -110,19 +96,19 @@ class Database(AbstractBase):
             'lives': int(game.lives),
             'player_ids': ' '.join(game.player_ids),
         }
-        logger.info('set item = ' + str(item))
         table_games.put_item(Item=item)
-        logger.info('game put')
+        logger.info('end')
 
     def clear_game(self, game_id: str) -> None:
         logger = logging.getLogger('hanabigame.database.clear_game')
-        logger.info('start with game_id = ' + game_id)
+        logger.info('game_id = %s', game_id)
         table_games = self.dynamodb.Table('games')
-        logger.info('get table games')
         table_games.delete_item(Key={'id': game_id})
-        logger.info('delete row with game')
+        logger.info('end')
 
     def create_tables(self) -> None:
+        logger = logging.getLogger('hanabigame.database.create_tables')
+        logger.info('start')
         self.dynamodb.create_table(
             TableName='players',
             KeySchema=[
@@ -154,23 +140,4 @@ class Database(AbstractBase):
                 },
             ],
         )
-
-
-# def create_game(game_id, player, name):
-#     table_games = dynamodb.Table('games')
-#     table_games.put_item(
-#         Item={
-#             'id': str(game_id),
-#             'state': 1,
-#             'player1': player,
-#         }
-#     )
-#     table_players = dynamodb.Table('players')
-#     table_players.put_item(
-#         Item={
-#             'id': player,
-#             'name': name,
-#             'state': 3,
-#             'game_id': str(game_id),
-#         }
-#     )
+        logger.info('end')
