@@ -34,10 +34,8 @@ class Player:
         logger = logging.getLogger('hanabigame.player.load')
         logger.info('start')
         if not self.loaded:
-            logger.info('not loaded id = ' + self.id)
             try:
                 response: PlayerORM = self.database.get_player_info(self.id)
-                logger.info('get PlayerORM')
                 self.name = response.name
                 self.state = response.state
                 self.game_id = response.game_id
@@ -46,7 +44,7 @@ class Player:
                 logger.info('player doesnt exist in db')
 
             self.loaded = True
-        logger.info('loaded id = ' + self.id)
+        logger.info('end')
 
     def save(self) -> None:
         logger = logging.getLogger('hanabigame.player.save')
@@ -58,12 +56,10 @@ class Player:
             game_id=self.game_id,
             hand=self.hand,
         ))
+        logger.info('end')
 
     def get_name(self) -> str:
-        logger = logging.getLogger('hanabigame.player.get_name')
-        logger.info('start')
         self.load()
-        logger.info('loaded')
         return self.name
 
     def set_name(self, name: str) -> None:
@@ -86,26 +82,34 @@ class Player:
         return self.hand
 
     def confirm_finish_game(self) -> None:
+        logger = logging.getLogger('hanabigame.player.confirm_finish_game')
+        logger.info('start')
         self.load()
         if self.state == PlayerState.PLAYING:
             self.state = PlayerState.CONFIRM_FINISH_STARTED_GAME
         elif self.state == PlayerState.WAITING_START_GAME:
             self.state = PlayerState.CONFIRM_FINISH_WAITING_GAME
         else:
+            logger.error('unexpected player state')
             raise UnexpectedPlayerState
+        logger.info('end')
 
     def reject_connect_to_game(self) -> None:
         self.load()
         self.state = PlayerState.NOT_PLAYING
 
     def reject_finish_game(self) -> None:
+        logger = logging.getLogger('hanabigame.player.reject_finish_game')
+        logger.info('start')
         self.load()
         if self.state == PlayerState.CONFIRM_FINISH_STARTED_GAME:
             self.state = PlayerState.PLAYING
         elif self.state == PlayerState.CONFIRM_FINISH_WAITING_GAME:
             self.state = PlayerState.WAITING_START_GAME
         else:
+            logger.error('unexpected player state')
             raise UnexpectedPlayerState
+        logger.info('end')
 
     def request_move_to_trash(self) -> int:
         self.load()
@@ -142,29 +146,17 @@ class Player:
         return self.state == PlayerState.REQUEST_GAME_CODE_TO_CONNECT
 
     def connect_to_game(self, game_id: str) -> None:
-        logger = logging.getLogger('hanabigame.player.connect_to_game')
-        logger.info('start')
         self.game_id = game_id
-        logger.info('set game_id')
         self.state = PlayerState.WAITING_START_GAME
-        logger.info('set state')
 
     def get_card(self, card_number: int) -> Card:
-        logger = logging.getLogger('hanabigame.player.get_card')
-        logger.info('start')
         self.load()
-        logger.info('loaded')
         card = self.hand.pop(card_number)
-        logger.info('get card ' + str(card) + 'other: ' + str(self.hand))
         return card
 
     def put_card(self, card: Card) -> None:
-        logger = logging.getLogger('hanabigame.player.put_card')
-        logger.info('start with card ' + str(card))
         self.load()
-        logger.info('loaded with hand: ' + str(self.hand))
         self.hand.append(card)
-        logger.info('appended hand = ' + str(self.hand))
 
     def is_request_card_number_to_trash(self) -> bool:
         self.load()
