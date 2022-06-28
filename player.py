@@ -92,6 +92,7 @@ class Player:
         elif self.state == PlayerState.WAITING_START_GAME:
             self.state = PlayerState.CONFIRM_FINISH_WAITING_GAME
         else:
+            self.state = PlayerState.CONFIRM_FINISH_STARTED_GAME
             raise UnexpectedPlayerState
 
     def reject_connect_to_game(self) -> None:
