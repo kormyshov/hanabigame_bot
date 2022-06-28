@@ -222,6 +222,7 @@ class Controller:
             )
             self.broadcast(constants.SCORE.format('0'), game)
             self.confirm_finish_game(game)
+            raise GameIsEnded
 
     def broadcast(self, message: str, game: Game, self_message: str = None, player_id: str = None):
         for p in game.players:
@@ -403,7 +404,10 @@ class Controller:
                     self.move_to_trash(game, player, text)
                 elif player.is_request_card_number_to_put():
                     logger.info('branch move_to_put')
-                    self.move_to_table(game, player, text)
+                    try:
+                        self.move_to_table(game, player, text)
+                    except GameIsEnded:
+                        return
                 elif player.is_request_hint_recipient():
                     self.request_for_type_of_hint(game, player, text)
                 elif player.is_request_hint_color():
