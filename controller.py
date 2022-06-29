@@ -1,7 +1,6 @@
-import logging
-
 import keyboards
 import constants
+from logging_decorator import logger
 from abstract_base import AbstractBase
 from abstract_viewer import AbstractViewer
 from player import Player
@@ -13,34 +12,27 @@ class Controller:
         self.database = database
         self.viewer = viewer
 
+    @logger
     def create_new_game(self, player: Player) -> None:
-        logger = logging.getLogger('hanabigame.controller.create_new_game')
-        logger.info('player = %s', str(player))
         game = Game()
         game_id = game.init_game(player)
         game.set_database(self.database)
         game.save()
         self.viewer.view(player.id, constants.GAME_CREATED)
         self.viewer.view(player.id, game_id, keyboards.get_waiting_second_player())
-        logger.info('end')
 
+    @logger
     def request_id_for_connect_to_game(self, player: Player) -> None:
-        logger = logging.getLogger('hanabigame.controller.request_id_for_connect_to_game')
-        logger.info('player = %s', str(player))
         player.request_game_code_to_connect()
         self.viewer.view(player.id, constants.ENTER_GAME_CODE_TO_CONNECT, keyboards.get_reject_connect_game())
-        logger.info('end')
 
+    @logger
     def reject_connect_to_game(self, player: Player) -> None:
-        logger = logging.getLogger('hanabigame.controller.reject_connect_to_game')
-        logger.info('player = %s', str(player))
         player.reject_connect_to_game()
         self.viewer.view(player.id, constants.ONBOARDING, keyboards.get_start_game())
-        logger.info('end')
 
+    @logger
     def connect_to_game(self, player: Player, game_id: str) -> None:
-        logger = logging.getLogger('hanabigame.controller.connect_to_game')
-        logger.info('player = %s, game_id = %s', player, game_id)
         game = Game()
         game.set_id(game_id)
         game.set_database(self.database)
@@ -67,19 +59,15 @@ class Controller:
                 constants.THERE_IS_NO_GAME_WITH_THIS_CODE,
                 keyboards.get_reject_connect_game(),
             )
-        logger.info('end')
 
+    @logger
     def start_game(self, game: Game) -> None:
-        logger = logging.getLogger('hanabigame.controller.start_game')
-        logger.info('game = %s', str(game))
         game.start()
         self.broadcast(constants.GAME_STARTED, game)
         self.turn_player(game, 0)
-        logger.info('end')
 
+    @logger
     def turn_player(self, game: Game, num: int) -> None:
-        logger = logging.getLogger('hanabigame.controller.turn_player')
-        logger.info('game = %s, num = %s', str(game), str(num))
         for i, p in enumerate(game.players):
             if i == num:
                 self.viewer.view(p.id, constants.YOUR_TURN, keyboards.get_turn(game.hints > 0))
@@ -89,18 +77,14 @@ class Controller:
                     constants.TURN_ANOTHER_PLAYER.format(game.players[num].get_name()),
                     keyboards.get_waiting_turn(),
                 )
-        logger.info('end')
 
+    @logger
     def request_for_confirm_finish_game(self, player: Player) -> None:
-        logger = logging.getLogger('hanabigame.controller.request_for_confirm_finish_game')
-        logger.info('player = %s', str(player))
         player.confirm_finish_game()
         self.viewer.view(player.id, constants.ARE_YOU_SURE, keyboards.get_confirm_finish_game())
-        logger.info('end')
 
+    @logger
     def reject_finish_game(self, game: Game, player: Player) -> None:
-        logger = logging.getLogger('hanabigame.controller.reject_finish_game')
-        logger.info('game = %s, player = %s', str(game), str(player))
         player.reject_finish_game()
         if player.is_playing():
             if game.is_player_turn(player):
@@ -112,36 +96,28 @@ class Controller:
                 self.viewer.view(player.id, constants.LETS_CONTINUE, keyboards.get_waiting_second_player())
             else:
                 self.viewer.view(player.id, constants.LETS_CONTINUE, keyboards.get_waiting_start_game())
-        logger.info('end')
 
+    @logger
     def confirm_finish_game(self, game: Game) -> None:
-        logger = logging.getLogger('hanabigame.controller.confirm_finish_game')
-        logger.info('game = %s', str(game))
         game.finish()
         for player in game.players:
             self.viewer.view(player.id, constants.GAME_FINISHED, keyboards.get_start_game())
-        logger.info('end')
 
+    @logger
     def look_table(self, game: Game, player: Player) -> None:
-        logger = logging.getLogger('hanabigame.controller.look_table')
-        logger.info('game = %s, player = %s', str(game), str(player))
         table, hints, lives = game.get_table_info()
         output = str(table) if table.len() != 0 else constants.EMPTY_TABLE
         output += '\n' + constants.HINTS + ': ' + str(hints)
         output += '\n' + constants.LIVES + ': ' + str(lives)
         self.viewer.view(player.id, output)
-        logger.info('end')
 
+    @logger
     def look_trash(self, game: Game, player: Player) -> None:
-        logger = logging.getLogger('hanabigame.controller.look_trash')
-        logger.info('game = %s, player = %s', str(game), str(player))
         trash = game.get_trash_cards()
         self.viewer.view(player.id, str(trash) if trash.len() != 0 else constants.EMPTY_TRASH)
-        logger.info('end')
 
+    @logger
     def look_hands(self, game: Game, player: Player) -> None:
-        logger = logging.getLogger('hanabigame.controller.look_hands')
-        logger.info('game = %s, player = %s', str(game), str(player))
         for p in game.players:
             if p.id != player.id:
                 hand = p.get_hand_cards()
@@ -149,18 +125,14 @@ class Controller:
                     player.id,
                     p.get_name() + '\n' + str(hand) if hand.len() != 0 else constants.EMPTY_HAND,
                 )
-        logger.info('end')
 
+    @logger
     def request_for_move_to_trash(self, player: Player) -> None:
-        logger = logging.getLogger('hanabigame.controller.request_for_move_to_trash')
-        logger.info('player = %s', str(player))
         count_of_cards = player.request_move_to_trash()
         self.viewer.view(player.id, constants.ENTER_CARD_NUMBER, keyboards.get_request_card_number(count_of_cards))
-        logger.info('end')
 
+    @logger
     def move_to_trash(self, game: Game, player: Player, card_number: str) -> None:
-        logger = logging.getLogger('hanabigame.controller.move_to_trash')
-        logger.info('game = %s, player = %s, card_number = %s', str(game), str(player), card_number)
         trashed_card = game.move_to_trash(player, int(card_number) - 1)
         self.broadcast(
             constants.PLAYER_HAS_TRASHED_CARD.format(player.name, str(trashed_card)),
@@ -169,18 +141,14 @@ class Controller:
             player.id,
         )
         self.next_turn(game)
-        logger.info('end')
 
+    @logger
     def request_for_move_to_table(self, player: Player) -> None:
-        logger = logging.getLogger('hanabigame.controller.request_for_move_to_table')
-        logger.info('player = %s', str(player))
         count_of_cards = player.request_move_to_table()
         self.viewer.view(player.id, constants.ENTER_CARD_NUMBER, keyboards.get_request_card_number(count_of_cards))
-        logger.info('end')
 
+    @logger
     def move_to_table(self, game: Game, player: Player, card_number: str) -> None:
-        logger = logging.getLogger('hanabigame.controller.move_to_table')
-        logger.info('game = %s, player = %s, card_number = %s', str(game), str(player), card_number)
         try:
             success, put_card = game.move_to_table(player, int(card_number) - 1)
             if success:
@@ -208,21 +176,14 @@ class Controller:
             self.broadcast(constants.SCORE.format('0'), game)
             self.confirm_finish_game(game)
             raise GameIsEnded
-        logger.info('end')
 
+    @logger
     def broadcast(self, message: str, game: Game, self_message: str = None, player_id: str = None):
-        logger = logging.getLogger('hanabigame.controller.broadcast')
-        logger.info(
-            'message = %s, game = %s, self_message = %s, player_id = %s',
-            message, str(game), self_message, player_id
-        )
         for p in game.players:
             self.viewer.view(p.id, message if player_id is None or player_id != p.id else self_message)
-        logger.info('end')
 
+    @logger
     def next_turn(self, game: Game):
-        logger = logging.getLogger('hanabigame.controller.next_turn')
-        logger.info('game = %s', str(game))
         try:
             player_number = game.next_turn()
             self.turn_player(game, player_number)
@@ -230,47 +191,37 @@ class Controller:
             score = game.get_score()
             self.broadcast(constants.SCORE.format(str(score)), game)
             self.confirm_finish_game(game)
-        logger.info('end')
 
+    @logger
     def request_for_hint_recipient(self, game: Game, player: Player) -> None:
-        logger = logging.getLogger('hanabigame.controller.request_for_hint_recipient')
-        logger.info('game = %s, player = %s', str(game), str(player))
         names = [p.get_name() for p in game.players if p.id != player.id]
         if len(names) > 1:
             player.request_hint_recipient()
             self.viewer.view(player.id, constants.ENTER_PLAYER_NAME, keyboards.get_request_player_name(names))
         else:
             self.request_for_type_of_hint(game, player, names[0])
-        logger.info('end')
 
+    @logger
     def request_for_type_of_hint(self, game: Game, player: Player, recipient_name: str) -> None:
-        logger = logging.getLogger('hanabigame.controller.request_for_type_of_hint')
-        logger.info('game = %s, player = %s, recipient_name = %s', str(game), str(player), recipient_name)
         recipient_number = 0
         for i, p in enumerate(game.players):
             if p.get_name() == recipient_name:
                 recipient_number = i
         player.request_hint_type(recipient_number)
         self.viewer.view(player.id, constants.ENTER_TYPE_OF_HINT, keyboards.get_type_of_hint())
-        logger.info('end')
 
+    @logger
     def request_for_hint_color(self, player: Player) -> None:
-        logger = logging.getLogger('hanabigame.controller.request_for_hint_color')
-        logger.info('player = %s', str(player))
         player.request_hint_color()
         self.viewer.view(player.id, constants.ENTER_COLOR, keyboards.get_colors())
-        logger.info('end')
 
+    @logger
     def request_for_hint_value(self, player: Player) -> None:
-        logger = logging.getLogger('hanabigame.controller.request_for_hint_value')
-        logger.info('player = %s', str(player))
         player.request_hint_value()
         self.viewer.view(player.id, constants.ENTER_VALUE, keyboards.get_values())
-        logger.info('end')
 
+    @logger
     def hint_color(self, game: Game, player: Player, color: str) -> None:
-        logger = logging.getLogger('hanabigame.controller.hint_color')
-        logger.info('game = %s, player = %s, color = %s', str(game), str(player), color)
         recipient_number = player.get_recipient_hint_number()
         card_numbers = game.hint_color(player, recipient_number, color)
         self.broadcast_hint(
@@ -287,11 +238,9 @@ class Controller:
             constants.YOU_HAS_HINT.format(game.players[recipient_number].get_name()),
         )
         self.next_turn(game)
-        logger.info('end')
 
+    @logger
     def hint_value(self, game: Game, player: Player, value: str) -> None:
-        logger = logging.getLogger('hanabigame.controller.hint_value')
-        logger.info('game = %s, player = %s, value = %s', str(game), str(player), value)
         recipient_number = player.get_recipient_hint_number()
         card_numbers = game.hint_value(player, recipient_number, value)
         self.broadcast_hint(
@@ -308,15 +257,10 @@ class Controller:
             constants.YOU_HAS_HINT.format(game.players[recipient_number].get_name()),
         )
         self.next_turn(game)
-        logger.info('end')
 
+    @logger
     def broadcast_hint(self, game: Game, player: Player, recipient_number: int,
                        hint: str, common_hint: str, self_hint: str):
-        logger = logging.getLogger('hanabigame.controller.broadcast_hint')
-        logger.info(
-            'game = %s, player = %s, recipient_number = %s, hint = %s, common_hint = %s, self_hint = %s',
-            str(game), str(player), str(recipient_number), hint, common_hint, self_hint,
-        )
         for i, p in enumerate(game.players):
             if i == recipient_number:
                 self.viewer.view(p.id, hint)
@@ -324,18 +268,14 @@ class Controller:
                 self.viewer.view(p.id, self_hint)
             else:
                 self.viewer.view(p.id, common_hint)
-        logger.info('end')
 
+    @logger
     def goto_menu(self, game: Game, player: Player):
-        logger = logging.getLogger('hanabigame.controller.goto_menu')
-        logger.info('game = %s, player = %s', str(game), str(player))
         player.set_playing_state()
         self.viewer.view(player.id, constants.YOUR_TURN, keyboards.get_turn(game.hints > 0))
-        logger.info('end')
 
+    @logger
     def operate(self, player_id: str, player_name: str, text: str):
-        logger = logging.getLogger('hanabigame.controller.operate')
-        logger.info('player_id = %s, player_name = %s, text = %s', player_id, player_name, text)
         player = Player(player_id, self.database)
         player.set_name(player_name)
         game_id = player.get_game_id()
