@@ -24,7 +24,6 @@ class Database(AbstractBase):
         response = table_players.get_item(Key={'id': player_id})
 
         if 'Item' not in response:
-            logger.info('player doesnt exist in db')
             raise PlayerDoesntExistInDB
 
         orm = PlayerORM(
@@ -59,7 +58,6 @@ class Database(AbstractBase):
         response = table_games.get_item(Key={'id': game_id})
 
         if 'Item' not in response:
-            logger.info('game does not exist in db')
             raise GameDoesntExistInDB
 
         orm = GameORM(
