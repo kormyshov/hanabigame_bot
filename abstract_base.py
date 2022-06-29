@@ -1,28 +1,36 @@
+from abc import ABC, abstractmethod
 from game_orm import GameORM
 from player_orm import PlayerORM
 
 
-class AbstractBase:
+class AbstractBase(ABC):
+    @abstractmethod
     def get_player_info(self, player_id: str) -> PlayerORM:
-        raise NotImplementedError
+        pass
 
+    @abstractmethod
     def set_player_info(self, player: PlayerORM) -> None:
-        raise NotImplementedError
+        pass
 
+    @abstractmethod
     def clear_player(self, player_id: str) -> None:
-        raise NotImplementedError
+        pass
 
+    @abstractmethod
     def get_game_info(self, game_id: str) -> GameORM:
-        raise NotImplementedError
+        pass
 
+    @abstractmethod
     def set_game_info(self, game: GameORM) -> None:
-        raise NotImplementedError
+        pass
 
+    @abstractmethod
     def clear_game(self, game_id: str) -> None:
-        raise NotImplementedError
+        pass
 
+    @abstractmethod
     def create_tables(self) -> None:
-        raise NotImplementedError
+        pass
 
 
 class GameDoesntExistInDB(Exception):
