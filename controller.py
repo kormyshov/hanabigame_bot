@@ -106,9 +106,11 @@ class Controller:
     @logger
     def look_table(self, game: Game, player: Player) -> None:
         table, hints, lives = game.get_table_info()
-        output = str(table) if table.len() != 0 else constants.EMPTY_TABLE
-        output += '\n' + constants.HINTS + ': ' + str(hints)
-        output += '\n' + constants.LIVES + ': ' + str(lives)
+        output = '{}\n{}: {}\n{}: {}'.format(
+            str(table) if table.len() != 0 else constants.EMPTY_TABLE,
+            constants.HINTS, str(hints),
+            constants.LIVES, str(lives),
+        )
         self.viewer.view(player.id, output)
 
     @logger
@@ -123,7 +125,7 @@ class Controller:
                 hand = p.get_hand_cards()
                 self.viewer.view(
                     player.id,
-                    p.get_name() + '\n' + str(hand) if hand.len() != 0 else constants.EMPTY_HAND,
+                    '{}\n{}'.format(p.get_name(), str(hand) if hand.len() != 0 else constants.EMPTY_HAND),
                 )
 
     @logger
