@@ -48,6 +48,16 @@ class ConnectionResult(Enum):
     OK_AND_START = 2
 
 
+MAX_PLAYERS = 5
+MAX_CARDS = 4
+MAX_HINTS = 8
+MAX_LIVES = 3
+
+
+MAX_CARDS_SMALL_GAME = 4
+MAX_PLAYERS_SMALL_GAME = 3
+
+
 def init_list() -> List[Card]:
     lst: List[Card] = []
     for color in CardColors:
@@ -160,13 +170,13 @@ class Game:
         self.players.append(player)
         player.connect_to_game(self.id)
 
-        return ConnectionResult.OK if len(self.players) < 5 else ConnectionResult.OK_AND_START
+        return ConnectionResult.OK if len(self.players) < MAX_PLAYERS else ConnectionResult.OK_AND_START
 
     @logger
     def start(self) -> None:
         lst = init_list()
         random.shuffle(lst)
-        cnt = 5 if len(self.players) < 4 else 4
+        cnt = MAX_CARDS_SMALL_GAME if len(self.players) <= MAX_PLAYERS_SMALL_GAME else MAX_CARDS
 
         for i, p in enumerate(self.players):
             p.start_game(Sequence(lst[i * cnt:(i + 1) * cnt]))
@@ -175,15 +185,15 @@ class Game:
         self.stack = Sequence(lst[cnt * len(self.players):])
         self.state = GameState.TURN_PLAYER_ONE
 
-        self.hints = 8
-        self.lives = 3
+        self.hints = MAX_HINTS
+        self.lives = MAX_LIVES
 
     @logger
     def take_card(self) -> Card:
         try:
             return self.stack.pop()
         except IndexError:
-            self.state += 5 * (self.state - 4)
+            self.state += MAX_PLAYERS * (self.state - MAX_PLAYERS + 1)
             raise GameStackIsEmpty
 
     @logger
@@ -198,7 +208,7 @@ class Game:
     def move_to_trash(self, player: Player, card_number: int) -> Card:
         trashed_card = player.get_card(card_number)
         self.trash.append(trashed_card)
-        self.hints = min(self.hints + 1, 8)
+        self.hints = min(self.hints + 1, MAX_HINTS)
         self.move_card_to_player(player)
         player.set_playing_state()
         return trashed_card
@@ -211,7 +221,7 @@ class Game:
             try:
                 put_card.get_next_card()
             except DontExistCard:
-                self.hints = min(self.hints + 1, 8)
+                self.hints = min(self.hints + 1, MAX_HINTS)
         else:
             self.trash.append(put_card)
             self.lives -= 1
@@ -256,17 +266,18 @@ class Game:
 
     @logger
     def next_turn(self) -> int:
-        if 35 <= self.state <= 39:
+        if GameState.LAST_TURN_ONE <= self.state <= GameState.LAST_TURN_FIVE:
             raise GameIsEnded
         self.state += 1
-        if 10 <= self.state <= 34 and self.state // 5 - 2 == self.state % 5:
-            self.state = GameState.LAST_TURN_ONE + self.state % 5
-        if (self.state - len(self.players)) % 5 == 0:
-            self.state -= self.state % 5
-        return int(self.state % 5)
+        if GameState.TURN_PLAYER_ONE_LAST_ONE <= self.state <= GameState.TURN_PLAYER_FIVE_LAST_FIVE:
+            if self.state // MAX_PLAYERS - 2 == self.state % MAX_PLAYERS:
+                self.state = GameState.LAST_TURN_ONE + self.state % MAX_PLAYERS
+        if (self.state - len(self.players)) % MAX_PLAYERS == 0:
+            self.state -= self.state % MAX_PLAYERS
+        return int(self.state % MAX_PLAYERS)
 
     def is_player_turn(self, player: Player) -> bool:
-        return self.players[int(self.state - GameState.TURN_PLAYER_ONE) % 5].id == player.id
+        return self.players[int(self.state - GameState.TURN_PLAYER_ONE) % MAX_PLAYERS].id == player.id
 
     @logger
     def get_score(self):
