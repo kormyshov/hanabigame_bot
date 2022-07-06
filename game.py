@@ -193,7 +193,16 @@ class Game:
         try:
             return self.stack.pop()
         except IndexError:
-            self.state += MAX_PLAYERS * (self.state - MAX_PLAYERS + 1)
+            if self.state == GameState.TURN_PLAYER_ONE:
+                self.state = GameState.TURN_PLAYER_ONE_LAST_ONE + MAX_PLAYERS * (len(self.players) - 1)
+            elif self.state == GameState.TURN_PLAYER_TWO:
+                self.state = GameState.TURN_PLAYER_TWO_LAST_ONE
+            elif self.state == GameState.TURN_PLAYER_THREE:
+                self.state = GameState.TURN_PLAYER_THREE_LAST_TWO
+            elif self.state == GameState.TURN_PLAYER_FOUR:
+                self.state = GameState.TURN_PLAYER_FOUR_LAST_THREE
+            elif self.state == GameState.TURN_PLAYER_FIVE:
+                self.state = GameState.TURN_PLAYER_FIVE_LAST_FOUR
             raise GameStackIsEmpty
 
     @logger
@@ -266,12 +275,13 @@ class Game:
 
     @logger
     def next_turn(self) -> int:
-        if GameState.LAST_TURN_ONE <= self.state <= GameState.LAST_TURN_FIVE:
+        if self.state in (GameState.TURN_PLAYER_ONE_LAST_ONE,
+                          GameState.TURN_PLAYER_TWO_LAST_TWO,
+                          GameState.TURN_PLAYER_THREE_LAST_THREE,
+                          GameState.TURN_PLAYER_FOUR_LAST_FOUR,
+                          GameState.TURN_PLAYER_FIVE_LAST_FIVE):
             raise GameIsEnded
         self.state += 1
-        if GameState.TURN_PLAYER_ONE_LAST_ONE <= self.state <= GameState.TURN_PLAYER_FIVE_LAST_FIVE:
-            if self.state // MAX_PLAYERS - 2 == self.state % MAX_PLAYERS:
-                self.state = GameState.LAST_TURN_ONE + self.state % MAX_PLAYERS
         if (self.state - len(self.players)) % MAX_PLAYERS == 0:
             self.state -= self.state % MAX_PLAYERS
         return int(self.state % MAX_PLAYERS)

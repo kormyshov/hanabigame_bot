@@ -126,3 +126,20 @@ def test_move_to_trash():
     assert g.trash == Sequence([c1])
     assert p1.hand.lst[-1] == c2
     assert g.stack.len() == 44
+
+
+def test_go_to_last_lap():
+    g = Game()
+    db = Dictbase()
+    p1 = Player('1', db)
+    p2 = Player('2', db)
+    p3 = Player('3', db)
+    g.players = [p1, p2, p3]
+    g.start()
+    g.stack = Sequence([])
+    g.move_to_trash(p1, 2)
+    g.next_turn()
+    assert g.state == GameState.TURN_PLAYER_TWO_LAST_THREE
+    g.move_to_trash(p2, 1)
+    g.next_turn()
+    assert g.state == GameState.TURN_PLAYER_THREE_LAST_THREE
