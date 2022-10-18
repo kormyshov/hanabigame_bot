@@ -88,6 +88,7 @@ class Game:
         self.hints: Hint = 0
         self.lives: Live = 0
         self.players: List[Player] = []
+        self.deleted: bool = False
 
     def __str__(self) -> str:
         return 'Game(id: {}, state: {}, hints: {}, lives: {}, table: {}, trash: {}, stack: {}, player_ids: {})'.format(
@@ -161,6 +162,7 @@ class Game:
         for player in self.players:
             self.database.clear_player(player.id)
         self.database.clear_game(self.id)
+        self.deleted = True
 
     @logger
     def connect_player(self, player: Player) -> ConnectionResult:

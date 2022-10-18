@@ -1,6 +1,9 @@
+import pytest
+
 from dictbase import Dictbase
 from null_viewer import NullViewer, ViewORM
 from controller import Controller
+from abstract_base import GameDoesntExistInDB, PlayerDoesntExistInDB
 import constants
 import keyboards
 
@@ -162,3 +165,36 @@ def test_trash_card():
     assert len(viewer.get_output()) == len(expected)
     assert viewer.get_output()[:10] == expected[:10]
     assert viewer.get_output()[-2:] == expected[-2:]
+
+
+def test_end_game_after_trash():
+    db = Dictbase()
+    viewer = NullViewer()
+    controller = Controller(db, viewer)
+    controller.operate('1', 'Oscar', constants.CREATE_GAME)
+    game_id = db.get_player_info('1').game_id
+    controller.operate('2', 'Lucky', constants.CONNECT_TO_GAME)
+    controller.operate('2', 'Lucky', game_id)
+    controller.operate('1', 'Oscar', constants.START_GAME)
+
+    for i in range(23):
+        controller.operate('1', 'Oscar', constants.TRASH)
+        controller.operate('1', 'Oscar', '1')
+        controller.operate('2', 'Lucky', constants.TRASH)
+        controller.operate('2', 'Lucky', '1')
+
+    controller.operate('1', 'Oscar', constants.TRASH)
+    controller.operate('1', 'Oscar', '1')
+
+    expected = [
+        ViewORM('1', constants.GAME_FINISHED, keyboards.get_start_game()),
+        ViewORM('2', constants.GAME_FINISHED, keyboards.get_start_game()),
+    ]
+
+    assert viewer.get_output()[-2:] == expected
+    with pytest.raises(GameDoesntExistInDB):
+        db.get_game_info(game_id)
+    with pytest.raises(PlayerDoesntExistInDB):
+        db.get_player_info('1')
+    with pytest.raises(PlayerDoesntExistInDB):
+        db.get_player_info('2')

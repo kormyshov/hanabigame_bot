@@ -292,6 +292,7 @@ class Controller:
             else:
                 if player.is_request_game_code_to_connect():
                     self.connect_to_game(player, text)
+            player.save()
         else:
             game = Game()
             game.set_id(game_id)
@@ -341,5 +342,6 @@ class Controller:
                 elif player.is_request_hint_value():
                     self.hint_value(game, player, text)
 
-            game.save()
-        player.save()
+            if not game.deleted:
+                game.save()
+                player.save()
